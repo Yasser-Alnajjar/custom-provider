@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Acme Desk — Custom Provider Lab</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+
+  <main>
+    <header>
+      <div>
+        <div class="breadcrumbs">Workspace <span>/</span> Integrations <span>/</span> <b>Acme Desk</b></div>
+        <h1>Acme Desk <span class="pill"><i></i> Demo provider</span></h1>
+        <p class="subtitle">A lightweight ticketing system for validating Elapsed's Custom Provider integration.</p>
+      </div>
+      <div class="header-actions"><button class="btn secondary" id="refreshBtn">↻ Refresh data</button><button
+          class="btn primary" id="newTicketBtn">＋ Create ticket</button></div>
+    </header>
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-top">Total tickets <span>↗</span></div><strong id="totalStat">6</strong><small>Available
+          through REST API</small>
+      </div>
+      <div class="stat">
+        <div class="stat-top">Open tickets <span class="blue">●</span></div><strong
+          id="openStat">2</strong><small>Require attention</small>
+      </div>
+      <div class="stat">
+        <div class="stat-top">Pending tickets <span class="amber">●</span></div><strong
+          id="pendingStat">1</strong><small>Waiting for response</small>
+      </div>
+      <div class="stat">
+        <div class="stat-top">Resolved / closed <span class="green">●</span></div><strong
+          id="resolvedStat">2</strong><small>Completed tickets</small>
+      </div>
+    </section>
+    <section class="panel" id="tickets">
+      <div class="panel-heading">
+        <div>
+          <h2>Tickets</h2>
+          <p>Manage sample records; Elapsed reads the same data from the API.</p>
+        </div><span class="tiny-status"><i></i> API online</span>
+      </div>
+      <div class="toolbar">
+        <div class="search">⌕ <input id="searchInput" placeholder="Search tickets by title or ID…"></div><select
+          id="statusFilter">
+          <option value="">All statuses</option>
+          <option>open</option>
+          <option>in_progress</option>
+          <option>pending</option>
+          <option>solved</option>
+          <option>closed</option>
+        </select><span class="record-count" id="recordCount">6 records</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>TICKET</th>
+              <th>REQUESTER</th>
+              <th>CUSTOMER</th>
+              <th>STATUS</th>
+              <th>PRIORITY</th>
+              <th>UPDATED</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="ticketRows"></tbody>
+        </table>
+      </div>
+      <div class="table-footer"><span>Demo data is stored in memory and resets when the server
+          restarts.</span><span>REST API · JSON</span></div>
+    </section>
+    <section class="lower-grid">
+      <div class="panel" id="api">
+        <div class="panel-heading">
+          <div>
+            <h2>API connection details</h2>
+            <p>Use these values in the Elapsed setup wizard.</p>
+          </div><span class="badge">v1</span>
+        </div>
+        <div class="api-list">
+          <div class="api-row">
+            <div><label>Base URL</label><code id="baseUrl">http://localhost:4100/api</code></div><button class="copy"
+              data-copy="baseUrl">Copy</button>
+          </div>
+          <div class="api-row">
+            <div><label>Authentication</label><code>Bearer token</code></div><button class="copy"
+              data-value="Bearer demo_elapsed_token">Copy</button>
+          </div>
+          <div class="api-row">
+            <div><label>Tickets endpoint</label><code>GET /tickets?page=1&amp;limit=3</code></div><button class="copy"
+              data-value="/tickets?page=1&limit=3">Copy</button>
+          </div>
+          <div class="api-row">
+            <div><label>Incremental sync</label><code>GET /tickets?updated_since=ISO_TIMESTAMP</code></div><button
+              class="copy" data-value="/tickets?updated_since=2026-10-08T00:00:00.000Z">Copy</button>
+          </div>
+          <div class="api-row">
+            <div><label>Events endpoint</label><code>GET /events?ticket_id=TCK-1001</code></div><button class="copy"
+              data-value="/events?ticket_id=TCK-1001">Copy</button>
+          </div>
+        </div>
+        <div class="callout"><span>ⓘ</span>
+          <div><b>For a remote Elapsed instance</b>
+            <p><code>localhost</code> refers to the machine running Elapsed, not your laptop. Deploy this demo to a
+              reachable test host or use a secure tunnel. Do not expose the demo publicly without restricting access.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="panel" id="events">
+        <div class="panel-heading">
+          <div>
+            <h2>Event history</h2>
+            <p>Sample ticket lifecycle events and comments.</p>
+          </div><button class="text-btn" id="eventsRefresh">Refresh ↻</button>
+        </div>
+        <div id="eventList" class="event-list"></div>
+      </div>
+    </section>
+    <footer>ACME DESK DEMO <span>•</span> Built for Elapsed custom-provider testing <span class="footer-right">Not a
+        production ticketing system</span></footer>
+  </main>
+  <dialog id="ticketDialog">
+    <form id="ticketForm">
+      <div class="dialog-head">
+        <div>
+          <h2>Create a ticket</h2>
+          <p>Add a record to the provider API dataset.</p>
+        </div><button type="button" class="x-btn" id="closeDialog">×</button>
+      </div>
+      <label>Ticket title<input name="title" required placeholder="Briefly describe the issue"></label>
+      <label>Description<textarea name="description" rows="3" placeholder="Additional details…"></textarea></label>
+      <div class="form-row"><label>Priority<select name="priority">
+            <option value="low">Low</option>
+            <option value="normal" selected>Normal</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select></label><label>Status<select name="status">
+            <option value="open">Open</option>
+            <option value="in_progress">In progress</option>
+            <option value="pending">Pending</option>
+          </select></label></div>
+      <label>Requester email<input name="email" type="email" required
+          placeholder="name@company.com"></label><label>Requester name<input name="requesterName" required
+          placeholder="Full name"></label>
+      <div class="dialog-actions"><button type="button" class="btn secondary" id="cancelDialog">Cancel</button><button
+          class="btn primary" type="submit">Create ticket</button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast"></div>
+  <script src="./app.js"></script>
+</body>
+
+</html>
