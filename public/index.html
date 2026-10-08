@@ -22,20 +22,20 @@
     </header>
     <section class="stats">
       <div class="stat">
-        <div class="stat-top">Total tickets <span>↗</span></div><strong id="totalStat">6</strong><small>Available
+        <div class="stat-top">Total tickets <span>↗</span></div><strong id="totalStat">—</strong><small id="totalNote">Available
           through REST API</small>
       </div>
       <div class="stat">
         <div class="stat-top">Open tickets <span class="blue">●</span></div><strong
-          id="openStat">2</strong><small>Require attention</small>
+          id="openStat">—</strong><small id="openNote">Require attention</small>
       </div>
       <div class="stat">
         <div class="stat-top">Pending tickets <span class="amber">●</span></div><strong
-          id="pendingStat">1</strong><small>Waiting for response</small>
+          id="pendingStat">—</strong><small id="pendingNote">Waiting for response</small>
       </div>
       <div class="stat">
         <div class="stat-top">Resolved / closed <span class="green">●</span></div><strong
-          id="resolvedStat">2</strong><small>Completed tickets</small>
+          id="resolvedStat">—</strong><small id="resolvedNote">Completed tickets</small>
       </div>
     </section>
     <section class="panel" id="tickets">
@@ -43,18 +43,13 @@
         <div>
           <h2>Tickets</h2>
           <p>Manage sample records; Elapsed reads the same data from the API.</p>
-        </div><span class="tiny-status"><i></i> API online</span>
+        </div><span class="tiny-status" id="apiStatus"><i></i> <span>Connecting…</span></span>
       </div>
       <div class="toolbar">
-        <div class="search">⌕ <input id="searchInput" placeholder="Search tickets by title or ID…"></div><select
+        <div class="search">⌕ <input id="searchInput" placeholder="Search by ID, title, requester or customer…"></div><select
           id="statusFilter">
           <option value="">All statuses</option>
-          <option>open</option>
-          <option>in_progress</option>
-          <option>pending</option>
-          <option>solved</option>
-          <option>closed</option>
-        </select><span class="record-count" id="recordCount">6 records</span>
+        </select><span class="record-count" id="recordCount">Loading…</span>
       </div>
       <div class="table-wrap">
         <table>
@@ -117,7 +112,7 @@
         <div class="panel-heading">
           <div>
             <h2>Event history</h2>
-            <p>Sample ticket lifecycle events and comments.</p>
+            <p>Latest activity across tickets.</p>
           </div><button class="text-btn" id="eventsRefresh">Refresh ↻</button>
         </div>
         <div id="eventList" class="event-list"></div>

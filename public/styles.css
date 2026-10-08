@@ -312,6 +312,14 @@ h1 {
   width: 6px;
   height: 6px;
 }
+.tiny-status.offline {
+  color: #f0a0aa;
+  background: #2b1219;
+  border-color: #5a2430;
+}
+.tiny-status.offline i {
+  background: #ff7b8b;
+}
 .toolbar {
   padding: 13px 19px;
   display: flex;
@@ -431,6 +439,8 @@ tbody tr:hover {
   padding: 5px 7px;
   font-size: 9px;
   text-transform: capitalize;
+  background: #232c3d;
+  color: #aab6c9;
 }
 .s-open {
   background: #132c42;
@@ -724,6 +734,13 @@ dialog::backdrop {
 .toast.show {
   opacity: 1;
   transform: translateY(0);
+}
+.empty .text-btn {
+  margin-top: 10px;
+}
+.row-actions:disabled {
+  opacity: 0.4;
+  cursor: progress;
 }
 .empty {
   padding: 28px;
