@@ -1,0 +1,3536 @@
+ال  events جايه بالشكل ده
+{
+    "items": [
+        {
+            "id": "evt-1",
+            "ticket_id": "TCK-1001",
+            "type": "created",
+            "created_at": "2026-10-08T15:19:46.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-2",
+            "ticket_id": "TCK-1001",
+            "type": "comment",
+            "created_at": "2026-10-08T15:20:16.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "User receives a 403 after signing in."
+        },
+        {
+            "id": "evt-3",
+            "ticket_id": "TCK-1001",
+            "type": "status_changed",
+            "created_at": "2026-10-08T15:21:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-4",
+            "ticket_id": "TCK-1001",
+            "type": "comment",
+            "created_at": "2026-10-08T16:34:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-5",
+            "ticket_id": "TCK-1001",
+            "type": "comment",
+            "created_at": "2026-10-08T16:35:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-6",
+            "ticket_id": "TCK-1002",
+            "type": "created",
+            "created_at": "2026-10-07T17:19:46.970Z",
+            "author": {
+                "id": "usr-12",
+                "name": "Karim Ali",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-7",
+            "ticket_id": "TCK-1002",
+            "type": "comment",
+            "created_at": "2026-10-07T17:20:16.970Z",
+            "author": {
+                "id": "usr-12",
+                "name": "Karim Ali",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "CSV export has fewer rows than the report view."
+        },
+        {
+            "id": "evt-8",
+            "ticket_id": "TCK-1002",
+            "type": "status_changed",
+            "created_at": "2026-10-07T17:21:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-9",
+            "ticket_id": "TCK-1002",
+            "type": "comment",
+            "created_at": "2026-10-07T17:59:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-10",
+            "ticket_id": "TCK-1002",
+            "type": "status_changed",
+            "created_at": "2026-10-07T18:01:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-11",
+            "ticket_id": "TCK-1003",
+            "type": "created",
+            "created_at": "2026-10-06T13:19:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-12",
+            "ticket_id": "TCK-1003",
+            "type": "comment",
+            "created_at": "2026-10-06T13:20:16.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Reset email arrived after 20 minutes."
+        },
+        {
+            "id": "evt-13",
+            "ticket_id": "TCK-1003",
+            "type": "status_changed",
+            "created_at": "2026-10-06T13:21:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-14",
+            "ticket_id": "TCK-1003",
+            "type": "comment",
+            "created_at": "2026-10-06T14:14:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-15",
+            "ticket_id": "TCK-1003",
+            "type": "status_changed",
+            "created_at": "2026-10-06T14:16:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-16",
+            "ticket_id": "TCK-1003",
+            "type": "comment",
+            "created_at": "2026-10-06T15:44:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-17",
+            "ticket_id": "TCK-1003",
+            "type": "status_changed",
+            "created_at": "2026-10-06T15:45:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-18",
+            "ticket_id": "TCK-1003",
+            "type": "comment",
+            "created_at": "2026-10-07T17:18:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-19",
+            "ticket_id": "TCK-1003",
+            "type": "status_changed",
+            "created_at": "2026-10-07T17:19:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-20",
+            "ticket_id": "TCK-1004",
+            "type": "created",
+            "created_at": "2026-10-09T06:49:46.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-21",
+            "ticket_id": "TCK-1004",
+            "type": "comment",
+            "created_at": "2026-10-09T06:50:16.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Crash started after version 5.8.1."
+        },
+        {
+            "id": "evt-22",
+            "ticket_id": "TCK-1004",
+            "type": "status_changed",
+            "created_at": "2026-10-09T06:51:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-23",
+            "ticket_id": "TCK-1005",
+            "type": "created",
+            "created_at": "2026-10-01T07:19:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-24",
+            "ticket_id": "TCK-1005",
+            "type": "comment",
+            "created_at": "2026-10-01T07:20:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Please send a tax invoice for September."
+        },
+        {
+            "id": "evt-25",
+            "ticket_id": "TCK-1005",
+            "type": "status_changed",
+            "created_at": "2026-10-01T07:21:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-26",
+            "ticket_id": "TCK-1005",
+            "type": "comment",
+            "created_at": "2026-10-01T09:19:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-27",
+            "ticket_id": "TCK-1005",
+            "type": "comment",
+            "created_at": "2026-10-05T07:18:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-28",
+            "ticket_id": "TCK-1005",
+            "type": "status_changed",
+            "created_at": "2026-10-05T07:19:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-29",
+            "ticket_id": "TCK-1005",
+            "type": "status_changed",
+            "created_at": "2026-10-06T07:19:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-30",
+            "ticket_id": "TCK-1006",
+            "type": "created",
+            "created_at": "2026-10-09T04:19:46.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-31",
+            "ticket_id": "TCK-1006",
+            "type": "comment",
+            "created_at": "2026-10-09T04:20:16.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Intermittent gateway errors from the partner API."
+        },
+        {
+            "id": "evt-32",
+            "ticket_id": "TCK-1006",
+            "type": "status_changed",
+            "created_at": "2026-10-09T04:21:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-33",
+            "ticket_id": "TCK-1006",
+            "type": "comment",
+            "created_at": "2026-10-09T04:39:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-34",
+            "ticket_id": "TCK-1006",
+            "type": "comment",
+            "created_at": "2026-10-09T04:40:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-35",
+            "ticket_id": "TCK-1006",
+            "type": "status_changed",
+            "created_at": "2026-10-09T04:44:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "in_progress",
+            "body": "Status changed from open to in_progress"
+        },
+        {
+            "id": "evt-36",
+            "ticket_id": "TCK-1007",
+            "type": "created",
+            "created_at": "2026-09-21T13:22:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-37",
+            "ticket_id": "TCK-1007",
+            "type": "comment",
+            "created_at": "2026-09-21T13:23:16.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Webhook deliveries are duplicated. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-38",
+            "ticket_id": "TCK-1007",
+            "type": "status_changed",
+            "created_at": "2026-09-21T13:24:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-39",
+            "ticket_id": "TCK-1007",
+            "type": "comment",
+            "created_at": "2026-09-21T16:00:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-40",
+            "ticket_id": "TCK-1007",
+            "type": "status_changed",
+            "created_at": "2026-09-21T16:02:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-41",
+            "ticket_id": "TCK-1007",
+            "type": "comment",
+            "created_at": "2026-09-21T17:30:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-42",
+            "ticket_id": "TCK-1007",
+            "type": "status_changed",
+            "created_at": "2026-09-21T17:31:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-43",
+            "ticket_id": "TCK-1007",
+            "type": "comment",
+            "created_at": "2026-09-28T19:38:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-44",
+            "ticket_id": "TCK-1007",
+            "type": "status_changed",
+            "created_at": "2026-09-28T19:39:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-45",
+            "ticket_id": "TCK-1007",
+            "type": "status_changed",
+            "created_at": "2026-09-29T19:39:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-46",
+            "ticket_id": "TCK-1008",
+            "type": "created",
+            "created_at": "2026-09-06T13:13:46.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-47",
+            "ticket_id": "TCK-1008",
+            "type": "comment",
+            "created_at": "2026-09-06T13:14:16.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "SSO login loops back to sign-in. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-48",
+            "ticket_id": "TCK-1008",
+            "type": "status_changed",
+            "created_at": "2026-09-06T13:15:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-49",
+            "ticket_id": "TCK-1008",
+            "type": "comment",
+            "created_at": "2026-09-06T14:13:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-50",
+            "ticket_id": "TCK-1008",
+            "type": "comment",
+            "created_at": "2026-09-06T14:14:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-51",
+            "ticket_id": "TCK-1008",
+            "type": "comment",
+            "created_at": "2026-09-10T11:44:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-52",
+            "ticket_id": "TCK-1008",
+            "type": "status_changed",
+            "created_at": "2026-09-10T11:45:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-53",
+            "ticket_id": "TCK-1008",
+            "type": "status_changed",
+            "created_at": "2026-09-11T11:45:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-54",
+            "ticket_id": "TCK-1009",
+            "type": "created",
+            "created_at": "2026-09-21T23:16:46.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-55",
+            "ticket_id": "TCK-1009",
+            "type": "comment",
+            "created_at": "2026-09-21T23:17:16.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Dashboard charts load slowly. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-56",
+            "ticket_id": "TCK-1009",
+            "type": "status_changed",
+            "created_at": "2026-09-21T23:18:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-57",
+            "ticket_id": "TCK-1009",
+            "type": "comment",
+            "created_at": "2026-09-22T00:09:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-58",
+            "ticket_id": "TCK-1009",
+            "type": "comment",
+            "created_at": "2026-09-22T00:10:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-59",
+            "ticket_id": "TCK-1009",
+            "type": "comment",
+            "created_at": "2026-09-22T16:03:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-60",
+            "ticket_id": "TCK-1009",
+            "type": "status_changed",
+            "created_at": "2026-09-22T16:04:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-61",
+            "ticket_id": "TCK-1010",
+            "type": "created",
+            "created_at": "2026-09-10T18:38:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-62",
+            "ticket_id": "TCK-1010",
+            "type": "comment",
+            "created_at": "2026-09-10T18:39:16.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Add a user to our workspace. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-63",
+            "ticket_id": "TCK-1010",
+            "type": "status_changed",
+            "created_at": "2026-09-10T18:40:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-64",
+            "ticket_id": "TCK-1010",
+            "type": "comment",
+            "created_at": "2026-09-10T20:03:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-65",
+            "ticket_id": "TCK-1010",
+            "type": "comment",
+            "created_at": "2026-09-10T20:04:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-66",
+            "ticket_id": "TCK-1010",
+            "type": "comment",
+            "created_at": "2026-09-11T11:54:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-67",
+            "ticket_id": "TCK-1010",
+            "type": "status_changed",
+            "created_at": "2026-09-11T11:55:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-68",
+            "ticket_id": "TCK-1010",
+            "type": "status_changed",
+            "created_at": "2026-09-12T11:55:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-69",
+            "ticket_id": "TCK-1011",
+            "type": "created",
+            "created_at": "2026-09-14T15:21:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-70",
+            "ticket_id": "TCK-1011",
+            "type": "comment",
+            "created_at": "2026-09-14T15:22:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Two-factor code never arrives. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-71",
+            "ticket_id": "TCK-1011",
+            "type": "status_changed",
+            "created_at": "2026-09-14T15:23:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-72",
+            "ticket_id": "TCK-1011",
+            "type": "comment",
+            "created_at": "2026-09-14T16:02:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-73",
+            "ticket_id": "TCK-1011",
+            "type": "comment",
+            "created_at": "2026-09-14T16:03:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-74",
+            "ticket_id": "TCK-1012",
+            "type": "created",
+            "created_at": "2026-09-03T18:59:46.970Z",
+            "author": {
+                "id": "usr-19",
+                "name": "Tamer Wahba",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-75",
+            "ticket_id": "TCK-1012",
+            "type": "comment",
+            "created_at": "2026-09-03T19:00:16.970Z",
+            "author": {
+                "id": "usr-19",
+                "name": "Tamer Wahba",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Refund for duplicate charge. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-76",
+            "ticket_id": "TCK-1012",
+            "type": "status_changed",
+            "created_at": "2026-09-03T19:01:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-77",
+            "ticket_id": "TCK-1012",
+            "type": "comment",
+            "created_at": "2026-09-03T21:53:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-78",
+            "ticket_id": "TCK-1012",
+            "type": "comment",
+            "created_at": "2026-09-03T21:54:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-79",
+            "ticket_id": "TCK-1012",
+            "type": "status_changed",
+            "created_at": "2026-09-03T21:55:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-80",
+            "ticket_id": "TCK-1012",
+            "type": "comment",
+            "created_at": "2026-09-03T23:23:46.970Z",
+            "author": {
+                "id": "usr-19",
+                "name": "Tamer Wahba",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-81",
+            "ticket_id": "TCK-1012",
+            "type": "status_changed",
+            "created_at": "2026-09-03T23:24:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-82",
+            "ticket_id": "TCK-1012",
+            "type": "comment",
+            "created_at": "2026-09-13T02:51:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-83",
+            "ticket_id": "TCK-1012",
+            "type": "status_changed",
+            "created_at": "2026-09-13T02:52:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-84",
+            "ticket_id": "TCK-1013",
+            "type": "created",
+            "created_at": "2026-09-05T12:08:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-85",
+            "ticket_id": "TCK-1013",
+            "type": "comment",
+            "created_at": "2026-09-05T12:09:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "CSV import rejects valid dates. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-86",
+            "ticket_id": "TCK-1013",
+            "type": "status_changed",
+            "created_at": "2026-09-05T12:10:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-87",
+            "ticket_id": "TCK-1013",
+            "type": "comment",
+            "created_at": "2026-09-05T14:22:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-88",
+            "ticket_id": "TCK-1013",
+            "type": "status_changed",
+            "created_at": "2026-09-05T14:24:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-89",
+            "ticket_id": "TCK-1013",
+            "type": "comment",
+            "created_at": "2026-09-05T15:52:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-90",
+            "ticket_id": "TCK-1013",
+            "type": "status_changed",
+            "created_at": "2026-09-05T15:53:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-91",
+            "ticket_id": "TCK-1013",
+            "type": "comment",
+            "created_at": "2026-09-24T13:51:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-92",
+            "ticket_id": "TCK-1013",
+            "type": "status_changed",
+            "created_at": "2026-09-24T13:52:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-93",
+            "ticket_id": "TCK-1014",
+            "type": "created",
+            "created_at": "2026-09-23T07:53:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-94",
+            "ticket_id": "TCK-1014",
+            "type": "comment",
+            "created_at": "2026-09-23T07:54:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Request: dark mode for the portal. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-95",
+            "ticket_id": "TCK-1014",
+            "type": "status_changed",
+            "created_at": "2026-09-23T07:55:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-96",
+            "ticket_id": "TCK-1014",
+            "type": "comment",
+            "created_at": "2026-09-23T09:42:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-97",
+            "ticket_id": "TCK-1015",
+            "type": "created",
+            "created_at": "2026-09-08T19:56:46.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-98",
+            "ticket_id": "TCK-1015",
+            "type": "comment",
+            "created_at": "2026-09-08T19:57:16.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Notification emails go to spam. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-99",
+            "ticket_id": "TCK-1015",
+            "type": "status_changed",
+            "created_at": "2026-09-08T19:58:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-100",
+            "ticket_id": "TCK-1015",
+            "type": "comment",
+            "created_at": "2026-09-08T22:59:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-101",
+            "ticket_id": "TCK-1015",
+            "type": "comment",
+            "created_at": "2026-09-08T23:00:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-102",
+            "ticket_id": "TCK-1015",
+            "type": "status_changed",
+            "created_at": "2026-09-08T23:01:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-103",
+            "ticket_id": "TCK-1015",
+            "type": "comment",
+            "created_at": "2026-09-09T00:29:46.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-104",
+            "ticket_id": "TCK-1015",
+            "type": "status_changed",
+            "created_at": "2026-09-09T00:30:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-105",
+            "ticket_id": "TCK-1015",
+            "type": "comment",
+            "created_at": "2026-09-25T06:06:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-106",
+            "ticket_id": "TCK-1015",
+            "type": "status_changed",
+            "created_at": "2026-09-25T06:07:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-107",
+            "ticket_id": "TCK-1015",
+            "type": "status_changed",
+            "created_at": "2026-09-26T06:07:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-108",
+            "ticket_id": "TCK-1016",
+            "type": "created",
+            "created_at": "2026-09-05T04:36:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-109",
+            "ticket_id": "TCK-1016",
+            "type": "comment",
+            "created_at": "2026-09-05T04:37:16.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Cannot change the account owner. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-110",
+            "ticket_id": "TCK-1016",
+            "type": "status_changed",
+            "created_at": "2026-09-05T04:38:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-111",
+            "ticket_id": "TCK-1016",
+            "type": "comment",
+            "created_at": "2026-09-05T06:06:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-112",
+            "ticket_id": "TCK-1016",
+            "type": "status_changed",
+            "created_at": "2026-09-05T06:08:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-113",
+            "ticket_id": "TCK-1016",
+            "type": "comment",
+            "created_at": "2026-09-05T07:36:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-114",
+            "ticket_id": "TCK-1016",
+            "type": "status_changed",
+            "created_at": "2026-09-05T07:37:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-115",
+            "ticket_id": "TCK-1016",
+            "type": "comment",
+            "created_at": "2026-09-22T02:21:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-116",
+            "ticket_id": "TCK-1016",
+            "type": "status_changed",
+            "created_at": "2026-09-22T02:22:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-117",
+            "ticket_id": "TCK-1017",
+            "type": "created",
+            "created_at": "2026-10-07T01:39:46.970Z",
+            "author": {
+                "id": "usr-17",
+                "name": "Youssef Gamal",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-118",
+            "ticket_id": "TCK-1017",
+            "type": "comment",
+            "created_at": "2026-10-07T01:40:16.970Z",
+            "author": {
+                "id": "usr-17",
+                "name": "Youssef Gamal",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Search returns stale results. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-119",
+            "ticket_id": "TCK-1017",
+            "type": "status_changed",
+            "created_at": "2026-10-07T01:41:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-120",
+            "ticket_id": "TCK-1017",
+            "type": "comment",
+            "created_at": "2026-10-07T02:44:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-121",
+            "ticket_id": "TCK-1017",
+            "type": "comment",
+            "created_at": "2026-10-07T09:52:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-122",
+            "ticket_id": "TCK-1017",
+            "type": "status_changed",
+            "created_at": "2026-10-07T09:53:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-123",
+            "ticket_id": "TCK-1018",
+            "type": "created",
+            "created_at": "2026-10-01T03:12:46.970Z",
+            "author": {
+                "id": "usr-19",
+                "name": "Tamer Wahba",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-124",
+            "ticket_id": "TCK-1018",
+            "type": "comment",
+            "created_at": "2026-10-01T03:13:16.970Z",
+            "author": {
+                "id": "usr-19",
+                "name": "Tamer Wahba",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Rate limit hit during nightly sync. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-125",
+            "ticket_id": "TCK-1018",
+            "type": "status_changed",
+            "created_at": "2026-10-01T03:14:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-126",
+            "ticket_id": "TCK-1018",
+            "type": "comment",
+            "created_at": "2026-10-01T05:29:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-127",
+            "ticket_id": "TCK-1018",
+            "type": "status_changed",
+            "created_at": "2026-10-01T05:31:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-128",
+            "ticket_id": "TCK-1018",
+            "type": "comment",
+            "created_at": "2026-10-01T06:59:46.970Z",
+            "author": {
+                "id": "usr-19",
+                "name": "Tamer Wahba",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-129",
+            "ticket_id": "TCK-1018",
+            "type": "status_changed",
+            "created_at": "2026-10-01T07:00:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-130",
+            "ticket_id": "TCK-1018",
+            "type": "comment",
+            "created_at": "2026-10-04T08:43:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-131",
+            "ticket_id": "TCK-1018",
+            "type": "status_changed",
+            "created_at": "2026-10-04T08:44:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-132",
+            "ticket_id": "TCK-1019",
+            "type": "created",
+            "created_at": "2026-09-16T09:08:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-133",
+            "ticket_id": "TCK-1019",
+            "type": "comment",
+            "created_at": "2026-09-16T09:09:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Update billing contact details. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-134",
+            "ticket_id": "TCK-1019",
+            "type": "status_changed",
+            "created_at": "2026-09-16T09:10:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-135",
+            "ticket_id": "TCK-1019",
+            "type": "comment",
+            "created_at": "2026-09-16T10:05:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-136",
+            "ticket_id": "TCK-1019",
+            "type": "status_changed",
+            "created_at": "2026-09-16T10:07:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-137",
+            "ticket_id": "TCK-1019",
+            "type": "comment",
+            "created_at": "2026-09-16T11:35:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-138",
+            "ticket_id": "TCK-1019",
+            "type": "status_changed",
+            "created_at": "2026-09-16T11:36:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-139",
+            "ticket_id": "TCK-1019",
+            "type": "comment",
+            "created_at": "2026-09-20T05:30:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-140",
+            "ticket_id": "TCK-1019",
+            "type": "status_changed",
+            "created_at": "2026-09-20T05:31:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-141",
+            "ticket_id": "TCK-1019",
+            "type": "status_changed",
+            "created_at": "2026-09-21T05:31:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-142",
+            "ticket_id": "TCK-1020",
+            "type": "created",
+            "created_at": "2026-10-06T21:46:46.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-143",
+            "ticket_id": "TCK-1020",
+            "type": "comment",
+            "created_at": "2026-10-06T21:47:16.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Scheduled report did not run. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-144",
+            "ticket_id": "TCK-1020",
+            "type": "status_changed",
+            "created_at": "2026-10-06T21:48:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-145",
+            "ticket_id": "TCK-1020",
+            "type": "comment",
+            "created_at": "2026-10-06T22:43:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-146",
+            "ticket_id": "TCK-1020",
+            "type": "comment",
+            "created_at": "2026-10-07T12:49:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-147",
+            "ticket_id": "TCK-1020",
+            "type": "status_changed",
+            "created_at": "2026-10-07T12:50:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-148",
+            "ticket_id": "TCK-1021",
+            "type": "created",
+            "created_at": "2026-09-26T06:40:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-149",
+            "ticket_id": "TCK-1021",
+            "type": "comment",
+            "created_at": "2026-09-26T06:41:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Cannot access billing dashboard. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-150",
+            "ticket_id": "TCK-1021",
+            "type": "status_changed",
+            "created_at": "2026-09-26T06:42:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-151",
+            "ticket_id": "TCK-1021",
+            "type": "comment",
+            "created_at": "2026-09-26T08:23:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-152",
+            "ticket_id": "TCK-1021",
+            "type": "status_changed",
+            "created_at": "2026-09-26T08:25:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-153",
+            "ticket_id": "TCK-1021",
+            "type": "comment",
+            "created_at": "2026-09-26T09:53:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-154",
+            "ticket_id": "TCK-1021",
+            "type": "status_changed",
+            "created_at": "2026-09-26T09:54:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-155",
+            "ticket_id": "TCK-1021",
+            "type": "comment",
+            "created_at": "2026-09-30T23:24:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-156",
+            "ticket_id": "TCK-1021",
+            "type": "status_changed",
+            "created_at": "2026-09-30T23:25:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-157",
+            "ticket_id": "TCK-1021",
+            "type": "status_changed",
+            "created_at": "2026-10-01T23:25:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-158",
+            "ticket_id": "TCK-1022",
+            "type": "created",
+            "created_at": "2026-09-16T22:14:46.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-159",
+            "ticket_id": "TCK-1022",
+            "type": "comment",
+            "created_at": "2026-09-16T22:15:16.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Export report is missing rows. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-160",
+            "ticket_id": "TCK-1022",
+            "type": "status_changed",
+            "created_at": "2026-09-16T22:16:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-161",
+            "ticket_id": "TCK-1022",
+            "type": "comment",
+            "created_at": "2026-09-16T22:41:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-162",
+            "ticket_id": "TCK-1022",
+            "type": "status_changed",
+            "created_at": "2026-09-16T22:43:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-163",
+            "ticket_id": "TCK-1022",
+            "type": "comment",
+            "created_at": "2026-09-17T00:11:46.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-164",
+            "ticket_id": "TCK-1022",
+            "type": "status_changed",
+            "created_at": "2026-09-17T00:12:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-165",
+            "ticket_id": "TCK-1022",
+            "type": "comment",
+            "created_at": "2026-09-21T04:17:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-166",
+            "ticket_id": "TCK-1022",
+            "type": "status_changed",
+            "created_at": "2026-09-21T04:18:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-167",
+            "ticket_id": "TCK-1022",
+            "type": "status_changed",
+            "created_at": "2026-09-22T04:18:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-168",
+            "ticket_id": "TCK-1023",
+            "type": "created",
+            "created_at": "2026-09-10T15:01:46.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-169",
+            "ticket_id": "TCK-1023",
+            "type": "comment",
+            "created_at": "2026-09-10T15:02:16.970Z",
+            "author": {
+                "id": "usr-14",
+                "name": "Nour Samir",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Password reset email delayed. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-170",
+            "ticket_id": "TCK-1023",
+            "type": "status_changed",
+            "created_at": "2026-09-10T15:03:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-171",
+            "ticket_id": "TCK-1023",
+            "type": "comment",
+            "created_at": "2026-09-10T15:33:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-172",
+            "ticket_id": "TCK-1023",
+            "type": "comment",
+            "created_at": "2026-09-25T14:20:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-173",
+            "ticket_id": "TCK-1023",
+            "type": "status_changed",
+            "created_at": "2026-09-25T14:21:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-174",
+            "ticket_id": "TCK-1023",
+            "type": "status_changed",
+            "created_at": "2026-09-26T14:21:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-175",
+            "ticket_id": "TCK-1024",
+            "type": "created",
+            "created_at": "2026-10-06T00:29:46.970Z",
+            "author": {
+                "id": "usr-20",
+                "name": "Heba Ragab",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-176",
+            "ticket_id": "TCK-1024",
+            "type": "comment",
+            "created_at": "2026-10-06T00:30:16.970Z",
+            "author": {
+                "id": "usr-20",
+                "name": "Heba Ragab",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Mobile app crashes on launch. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-177",
+            "ticket_id": "TCK-1024",
+            "type": "status_changed",
+            "created_at": "2026-10-06T00:31:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-178",
+            "ticket_id": "TCK-1024",
+            "type": "comment",
+            "created_at": "2026-10-06T02:12:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-179",
+            "ticket_id": "TCK-1024",
+            "type": "status_changed",
+            "created_at": "2026-10-06T02:17:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "in_progress",
+            "body": "Status changed from open to in_progress"
+        },
+        {
+            "id": "evt-180",
+            "ticket_id": "TCK-1025",
+            "type": "created",
+            "created_at": "2026-10-08T17:09:46.970Z",
+            "author": {
+                "id": "usr-18",
+                "name": "Dina Farouk",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-181",
+            "ticket_id": "TCK-1025",
+            "type": "comment",
+            "created_at": "2026-10-08T17:10:16.970Z",
+            "author": {
+                "id": "usr-18",
+                "name": "Dina Farouk",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Need invoice for September. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-182",
+            "ticket_id": "TCK-1025",
+            "type": "status_changed",
+            "created_at": "2026-10-08T17:11:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-183",
+            "ticket_id": "TCK-1025",
+            "type": "comment",
+            "created_at": "2026-10-08T19:15:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-184",
+            "ticket_id": "TCK-1026",
+            "type": "created",
+            "created_at": "2026-09-21T15:19:46.970Z",
+            "author": {
+                "id": "usr-17",
+                "name": "Youssef Gamal",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-185",
+            "ticket_id": "TCK-1026",
+            "type": "comment",
+            "created_at": "2026-09-21T15:20:16.970Z",
+            "author": {
+                "id": "usr-17",
+                "name": "Youssef Gamal",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "API returns intermittent 502. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-186",
+            "ticket_id": "TCK-1026",
+            "type": "status_changed",
+            "created_at": "2026-09-21T15:21:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-187",
+            "ticket_id": "TCK-1026",
+            "type": "comment",
+            "created_at": "2026-09-21T16:44:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-188",
+            "ticket_id": "TCK-1026",
+            "type": "comment",
+            "created_at": "2026-10-01T00:40:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-189",
+            "ticket_id": "TCK-1026",
+            "type": "status_changed",
+            "created_at": "2026-10-01T00:41:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-190",
+            "ticket_id": "TCK-1026",
+            "type": "status_changed",
+            "created_at": "2026-10-02T00:41:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-191",
+            "ticket_id": "TCK-1027",
+            "type": "created",
+            "created_at": "2026-10-01T06:32:46.970Z",
+            "author": {
+                "id": "usr-18",
+                "name": "Dina Farouk",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-192",
+            "ticket_id": "TCK-1027",
+            "type": "comment",
+            "created_at": "2026-10-01T06:33:16.970Z",
+            "author": {
+                "id": "usr-18",
+                "name": "Dina Farouk",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Webhook deliveries are duplicated. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-193",
+            "ticket_id": "TCK-1027",
+            "type": "status_changed",
+            "created_at": "2026-10-01T06:34:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-194",
+            "ticket_id": "TCK-1027",
+            "type": "comment",
+            "created_at": "2026-10-01T06:52:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-195",
+            "ticket_id": "TCK-1027",
+            "type": "comment",
+            "created_at": "2026-10-04T10:15:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-196",
+            "ticket_id": "TCK-1027",
+            "type": "status_changed",
+            "created_at": "2026-10-04T10:16:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-197",
+            "ticket_id": "TCK-1028",
+            "type": "created",
+            "created_at": "2026-10-07T13:40:46.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-198",
+            "ticket_id": "TCK-1028",
+            "type": "comment",
+            "created_at": "2026-10-07T13:41:16.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "SSO login loops back to sign-in. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-199",
+            "ticket_id": "TCK-1028",
+            "type": "status_changed",
+            "created_at": "2026-10-07T13:42:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-200",
+            "ticket_id": "TCK-1028",
+            "type": "comment",
+            "created_at": "2026-10-07T15:04:46.970Z",
+            "author": {
+                "id": "agent-1",
+                "name": "Sara Mostafa",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-201",
+            "ticket_id": "TCK-1029",
+            "type": "created",
+            "created_at": "2026-09-25T07:39:46.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-202",
+            "ticket_id": "TCK-1029",
+            "type": "comment",
+            "created_at": "2026-09-25T07:40:16.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Dashboard charts load slowly. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-203",
+            "ticket_id": "TCK-1029",
+            "type": "status_changed",
+            "created_at": "2026-09-25T07:41:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-204",
+            "ticket_id": "TCK-1029",
+            "type": "comment",
+            "created_at": "2026-09-25T09:08:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-205",
+            "ticket_id": "TCK-1029",
+            "type": "comment",
+            "created_at": "2026-09-25T09:09:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-206",
+            "ticket_id": "TCK-1029",
+            "type": "comment",
+            "created_at": "2026-09-29T06:04:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-207",
+            "ticket_id": "TCK-1029",
+            "type": "status_changed",
+            "created_at": "2026-09-29T06:05:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-208",
+            "ticket_id": "TCK-1029",
+            "type": "status_changed",
+            "created_at": "2026-09-30T06:05:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-209",
+            "ticket_id": "TCK-1030",
+            "type": "created",
+            "created_at": "2026-09-23T23:54:46.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-210",
+            "ticket_id": "TCK-1030",
+            "type": "comment",
+            "created_at": "2026-09-23T23:55:16.970Z",
+            "author": {
+                "id": "usr-13",
+                "name": "Laila Nabil",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Add a user to our workspace. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-211",
+            "ticket_id": "TCK-1030",
+            "type": "status_changed",
+            "created_at": "2026-09-23T23:56:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-212",
+            "ticket_id": "TCK-1030",
+            "type": "comment",
+            "created_at": "2026-09-24T01:17:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-213",
+            "ticket_id": "TCK-1030",
+            "type": "comment",
+            "created_at": "2026-09-24T01:18:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-214",
+            "ticket_id": "TCK-1030",
+            "type": "comment",
+            "created_at": "2026-09-25T07:29:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-215",
+            "ticket_id": "TCK-1030",
+            "type": "status_changed",
+            "created_at": "2026-09-25T07:30:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-216",
+            "ticket_id": "TCK-1030",
+            "type": "status_changed",
+            "created_at": "2026-09-26T07:30:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-217",
+            "ticket_id": "TCK-1031",
+            "type": "created",
+            "created_at": "2026-10-08T06:55:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-218",
+            "ticket_id": "TCK-1031",
+            "type": "comment",
+            "created_at": "2026-10-08T06:56:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Two-factor code never arrives. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-219",
+            "ticket_id": "TCK-1031",
+            "type": "status_changed",
+            "created_at": "2026-10-08T06:57:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-220",
+            "ticket_id": "TCK-1031",
+            "type": "comment",
+            "created_at": "2026-10-08T07:10:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-221",
+            "ticket_id": "TCK-1031",
+            "type": "comment",
+            "created_at": "2026-10-08T07:11:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-222",
+            "ticket_id": "TCK-1031",
+            "type": "comment",
+            "created_at": "2026-10-08T13:04:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-223",
+            "ticket_id": "TCK-1031",
+            "type": "status_changed",
+            "created_at": "2026-10-08T13:05:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-224",
+            "ticket_id": "TCK-1032",
+            "type": "created",
+            "created_at": "2026-09-11T11:39:46.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-225",
+            "ticket_id": "TCK-1032",
+            "type": "comment",
+            "created_at": "2026-09-11T11:40:16.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Refund for duplicate charge. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-226",
+            "ticket_id": "TCK-1032",
+            "type": "status_changed",
+            "created_at": "2026-09-11T11:41:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-227",
+            "ticket_id": "TCK-1032",
+            "type": "comment",
+            "created_at": "2026-09-11T14:08:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-228",
+            "ticket_id": "TCK-1032",
+            "type": "comment",
+            "created_at": "2026-09-11T14:09:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "body": "Internal note: checked the account, escalating if it repeats."
+        },
+        {
+            "id": "evt-229",
+            "ticket_id": "TCK-1032",
+            "type": "status_changed",
+            "created_at": "2026-09-11T14:10:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "pending",
+            "body": "Status changed from open to pending"
+        },
+        {
+            "id": "evt-230",
+            "ticket_id": "TCK-1032",
+            "type": "comment",
+            "created_at": "2026-09-11T15:38:46.970Z",
+            "author": {
+                "id": "usr-11",
+                "name": "Mona Hassan",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Here is the extra information you asked for."
+        },
+        {
+            "id": "evt-231",
+            "ticket_id": "TCK-1032",
+            "type": "status_changed",
+            "created_at": "2026-09-11T15:39:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "pending",
+            "to": "open",
+            "body": "Status changed from pending to open"
+        },
+        {
+            "id": "evt-232",
+            "ticket_id": "TCK-1032",
+            "type": "comment",
+            "created_at": "2026-09-20T09:45:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-233",
+            "ticket_id": "TCK-1032",
+            "type": "status_changed",
+            "created_at": "2026-09-20T09:46:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-234",
+            "ticket_id": "TCK-1032",
+            "type": "status_changed",
+            "created_at": "2026-09-21T09:46:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-235",
+            "ticket_id": "TCK-1033",
+            "type": "created",
+            "created_at": "2026-09-23T09:50:46.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-236",
+            "ticket_id": "TCK-1033",
+            "type": "comment",
+            "created_at": "2026-09-23T09:51:16.970Z",
+            "author": {
+                "id": "usr-15",
+                "name": "Amr Saeed",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "CSV import rejects valid dates. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-237",
+            "ticket_id": "TCK-1033",
+            "type": "status_changed",
+            "created_at": "2026-09-23T09:52:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-238",
+            "ticket_id": "TCK-1034",
+            "type": "created",
+            "created_at": "2026-09-02T18:41:46.970Z",
+            "author": {
+                "id": "usr-20",
+                "name": "Heba Ragab",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-239",
+            "ticket_id": "TCK-1034",
+            "type": "comment",
+            "created_at": "2026-09-02T18:42:16.970Z",
+            "author": {
+                "id": "usr-20",
+                "name": "Heba Ragab",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Request: dark mode for the portal. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-240",
+            "ticket_id": "TCK-1034",
+            "type": "status_changed",
+            "created_at": "2026-09-02T18:43:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-241",
+            "ticket_id": "TCK-1034",
+            "type": "comment",
+            "created_at": "2026-09-02T20:19:46.970Z",
+            "author": {
+                "id": "agent-4",
+                "name": "Mariam Tarek",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-242",
+            "ticket_id": "TCK-1035",
+            "type": "created",
+            "created_at": "2026-09-26T07:55:46.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-243",
+            "ticket_id": "TCK-1035",
+            "type": "comment",
+            "created_at": "2026-09-26T07:56:16.970Z",
+            "author": {
+                "id": "usr-16",
+                "name": "Salma Fathy",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Notification emails go to spam. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-244",
+            "ticket_id": "TCK-1035",
+            "type": "status_changed",
+            "created_at": "2026-09-26T07:57:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-245",
+            "ticket_id": "TCK-1035",
+            "type": "comment",
+            "created_at": "2026-09-26T09:38:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-246",
+            "ticket_id": "TCK-1035",
+            "type": "comment",
+            "created_at": "2026-10-01T18:31:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "This is now resolved. Reply if you still see the problem."
+        },
+        {
+            "id": "evt-247",
+            "ticket_id": "TCK-1035",
+            "type": "status_changed",
+            "created_at": "2026-10-01T18:32:46.970Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "solved",
+            "body": "Status changed from open to solved"
+        },
+        {
+            "id": "evt-248",
+            "ticket_id": "TCK-1035",
+            "type": "status_changed",
+            "created_at": "2026-10-02T18:32:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "solved",
+            "to": "closed",
+            "body": "Status changed from solved to closed"
+        },
+        {
+            "id": "evt-249",
+            "ticket_id": "TCK-1036",
+            "type": "created",
+            "created_at": "2026-09-18T07:16:46.970Z",
+            "author": {
+                "id": "usr-12",
+                "name": "Karim Ali",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Ticket created"
+        },
+        {
+            "id": "evt-250",
+            "ticket_id": "TCK-1036",
+            "type": "comment",
+            "created_at": "2026-09-18T07:17:16.970Z",
+            "author": {
+                "id": "usr-12",
+                "name": "Karim Ali",
+                "role": "customer"
+            },
+            "public": true,
+            "body": "Cannot change the account owner. Reported by the customer, details attached to the account."
+        },
+        {
+            "id": "evt-251",
+            "ticket_id": "TCK-1036",
+            "type": "status_changed",
+            "created_at": "2026-09-18T07:18:46.970Z",
+            "author": {
+                "id": "system",
+                "name": "System",
+                "role": "system"
+            },
+            "public": false,
+            "from": "new",
+            "to": "open",
+            "body": "Status changed from new to open"
+        },
+        {
+            "id": "evt-252",
+            "ticket_id": "TCK-1036",
+            "type": "comment",
+            "created_at": "2026-09-18T09:59:46.970Z",
+            "author": {
+                "id": "agent-3",
+                "name": "Hany Fawzy",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Thanks for reaching out. We are looking into this now."
+        },
+        {
+            "id": "evt-253",
+            "ticket_id": "TCK-1004",
+            "type": "comment",
+            "created_at": "2026-10-09T07:24:29.471Z",
+            "author": {
+                "id": "agent-demo",
+                "name": "Omar",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "Looking into it"
+        },
+        {
+            "id": "evt-254",
+            "ticket_id": "TCK-1004",
+            "type": "status_changed",
+            "created_at": "2026-10-09T09:11:55.672Z",
+            "author": {
+                "id": "agent-2",
+                "name": "Omar Adel",
+                "role": "agent"
+            },
+            "public": false,
+            "from": "open",
+            "to": "in_progress",
+            "body": "Status changed from open to in_progress"
+        },
+        {
+            "id": "evt-255",
+            "ticket_id": "TCK-1004",
+            "type": "comment",
+            "created_at": "2026-10-09T09:24:26.467Z",
+            "author": {
+                "id": "agent-demo",
+                "name": "Demo Agent",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "hi"
+        },
+        {
+            "id": "evt-256",
+            "ticket_id": "TCK-1004",
+            "type": "comment",
+            "created_at": "2026-10-09T09:24:31.068Z",
+            "author": {
+                "id": "agent-demo",
+                "name": "Demo Agent",
+                "role": "agent"
+            },
+            "public": true,
+            "body": "hi"
+        }
+    ],
+    "total": 256
+}
+وانا عندي محتاج الداتا تكون كدا
+<div class="bg-surface-container-low rounded-xl p-5"><div class="flex flex-col gap-5"><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-mode">What should Elapsed track?</label><select id="cp-mode" class="border-input bg-background text-foreground h-8 w-full rounded-md border px-2 text-xs focus-visible:ring-2 focus-visible:ring-input focus-visible:outline-none"><option value="resolution_only">Resolution only</option><option value="full">Full SLA: first response, next reply and resolution</option></select><p class="text-on-surface-variant/70 text-xs">Resolution-only needs only tickets. First response and next reply need the replies on each ticket, and are shown as unsupported otherwise.</p></div><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-comments-src">Where the replies are</label><select id="cp-comments-src" class="border-input bg-background text-foreground h-8 w-full rounded-md border px-2 text-xs focus-visible:ring-2 focus-visible:ring-input focus-visible:outline-none"><option value="embedded">Inside each ticket</option><option value="endpoint">A separate request per ticket</option></select><p class="text-on-surface-variant/70 text-xs">A separate request per ticket makes large imports slower (many syncs).</p></div><div class="grid gap-4 sm:grid-cols-2"><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-c-items">Where the comments are</label><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" id="cp-c-items" autocomplete="off" type="text" value="$.items[*]"></div><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-cm-id">Comment ID</label><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" id="cp-cm-id" autocomplete="off" type="text" value="$.id"></div><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-cm-createdAt">Comment time</label><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" id="cp-cm-createdAt" autocomplete="off" type="text" value="$.created_at"></div><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-cm-authorRole">Author role</label><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" id="cp-cm-authorRole" autocomplete="off" type="text" value="$.author.role"></div><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-cm-isPublic">Public / private field</label><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" id="cp-cm-isPublic" autocomplete="off" type="text" value="$.public"></div><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-cm-body">Message text (optional)</label><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" id="cp-cm-body" autocomplete="off" type="text" value="$.body"><p class="text-on-surface-variant/70 text-xs">Leave blank to keep message text out of Elapsed; the conversation then shows replies without text.</p></div><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-cm-authorName">Author name (optional)</label><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" id="cp-cm-authorName" autocomplete="off" type="text" value="$.author.name"></div><fieldset class="flex flex-col gap-2"><legend class="text-on-surface-variant text-xs font-medium">Author roles</legend><div class="flex items-center gap-2"><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" aria-label="Author roles: value in your system" value="agent"><span class="text-on-surface-variant">→</span><select aria-label="Author roles: Elapsed value" class="border-input bg-background text-foreground h-8 w-full rounded-md border px-2 text-xs focus-visible:ring-2 focus-visible:ring-input focus-visible:outline-none"><option value="customer">Customer</option><option value="agent">Agent</option><option value="system">System (ignored)</option></select><button type="button" class="text-on-surface-variant hover:text-on-surface px-1 text-sm" aria-label="Remove agent">×</button></div><div class="flex items-center gap-2"><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" aria-label="Author roles: value in your system" value="system"><span class="text-on-surface-variant">→</span><select aria-label="Author roles: Elapsed value" class="border-input bg-background text-foreground h-8 w-full rounded-md border px-2 text-xs focus-visible:ring-2 focus-visible:ring-input focus-visible:outline-none"><option value="customer">Customer</option><option value="agent">Agent</option><option value="system">System (ignored)</option></select><button type="button" class="text-on-surface-variant hover:text-on-surface px-1 text-sm" aria-label="Remove system">×</button></div><div class="flex items-center gap-2"><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" aria-label="Author roles: value in your system" value="customer"><span class="text-on-surface-variant">→</span><select aria-label="Author roles: Elapsed value" class="border-input bg-background text-foreground h-8 w-full rounded-md border px-2 text-xs focus-visible:ring-2 focus-visible:ring-input focus-visible:outline-none"><option value="customer">Customer</option><option value="agent">Agent</option><option value="system">System (ignored)</option></select><button type="button" class="text-on-surface-variant hover:text-on-surface px-1 text-sm" aria-label="Remove customer">×</button></div><button type="button" id="cp-roles-add" class="text-primary self-start text-xs hover:underline">Add a value</button></fieldset><fieldset class="flex flex-col gap-2"><legend class="text-on-surface-variant text-xs font-medium">Visibility values (if not true/false)</legend><div class="flex items-center gap-2"><input class="flex h-8 w-full min-w-0 text-xs rounded-md border border-input bg-background px-3 py-2 transition-colors ring-offset-background file:border-0 file:bg-transparent file:inline-flex file:text-xs file:font-medium file:text-foreground placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-input focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-xs font-mono" aria-label="Visibility values (if not true/false): value in your system" value="public"><span class="text-on-surface-variant">→</span><select aria-label="Visibility values (if not true/false): Elapsed value" class="border-input bg-background text-foreground h-8 w-full rounded-md border px-2 text-xs focus-visible:ring-2 focus-visible:ring-input focus-visible:outline-none"><option value="public">Public</option><option value="private">Private note (never a reply)</option></select><button type="button" class="text-on-surface-variant hover:text-on-surface px-1 text-sm" aria-label="Remove public">×</button></div><button type="button" id="cp-visibility-add" class="text-primary self-start text-xs hover:underline">Add a value</button></fieldset><div class="sm:col-span-2 flex flex-col gap-4"><div class="flex flex-col gap-1.5"><label data-slot="label" class="flex items-center gap-2 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-on-surface-variant text-xs font-medium" for="cp-creator">Who creates a ticket?</label><select id="cp-creator" class="border-input bg-background text-foreground h-8 w-full rounded-md border px-2 text-xs focus-visible:ring-2 focus-visible:ring-input focus-visible:outline-none"><option value="first_comment_author">The author of the first comment</option><option value="assume_customer">Customers create tickets (I confirm this)</option><option value="path">A field on the ticket</option></select><p class="text-on-surface-variant/70 text-xs">This sets when the first-response clock starts and cannot be re-derived later, so it must be right.</p></div></div></div><p class="text-on-surface-variant text-xs">Status history, deletion signals and a ticket-detail endpoint are available in the Advanced JSON editor. Without status history Elapsed uses only each ticket's current status and never reconstructs history.</p></div></div>

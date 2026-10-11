@@ -1,0 +1,14 @@
+{
+  "name": "custom-provider-lab",
+  "private": true,
+  "description": "Mock ticketing provider for Elapsed's Custom Ticket Provider integration. The server has no runtime dependencies; Tailwind is only used to build public/styles.css.",
+  "scripts": {
+    "start": "node server.js",
+    "build:css": "tailwindcss -i src/styles.css -o public/styles.css --minify",
+    "watch:css": "tailwindcss -i src/styles.css -o public/styles.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}
