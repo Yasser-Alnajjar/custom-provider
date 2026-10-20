@@ -7,77 +7,36 @@ const PORT = Number(process.env.PORT || 4100);
 const API_TOKEN = process.env.API_TOKEN || "demo_elapsed";
 const publicDir = path.join(__dirname, "public");
 
-const MIN = 60_000;
-const NOW = Date.now();
-const iso = (ms) => new Date(Math.min(ms, Date.now())).toISOString();
+// JSON file database. On Vercel the project files are read-only, so /tmp is the
+// only writable place (and it does not outlive the function instance).
+const DB_FILE =
+  process.env.DB_FILE ||
+  (process.env.VERCEL ? "/tmp/db.json" : path.join(__dirname, "data", "db.json"));
 
 const STATUSES = ["new", "open", "pending", "in_progress", "solved", "closed"];
 const RESOLVED = ["solved", "closed"];
 const PRIORITIES = ["low", "normal", "high", "urgent"];
 const ROLES = ["customer", "agent", "system"];
 
-const CUSTOMERS = [
-  { id: "org-1", name: "Acme Egypt" },
-  { id: "org-2", name: "Northstar Labs" },
-  { id: "org-3", name: "Delta Retail" },
-  { id: "org-4", name: "Horizon Telecom" },
-  { id: "org-5", name: "Blue Nile Logistics" },
-];
-
-const REQUESTERS = {
-  "org-1": [
-    { id: "usr-11", name: "Mona Hassan", email: "mona@example.com" },
-    { id: "usr-13", name: "Laila Nabil", email: "laila@example.com" },
-  ],
-  "org-2": [
-    { id: "usr-12", name: "Karim Ali", email: "karim@example.com" },
-    { id: "usr-15", name: "Amr Saeed", email: "amr@example.com" },
-  ],
-  "org-3": [
-    { id: "usr-14", name: "Nour Samir", email: "nour@example.com" },
-    { id: "usr-16", name: "Salma Fathy", email: "salma@example.com" },
-  ],
-  "org-4": [
-    { id: "usr-17", name: "Youssef Gamal", email: "youssef@example.com" },
-    { id: "usr-18", name: "Dina Farouk", email: "dina@example.com" },
-  ],
-  "org-5": [
-    { id: "usr-19", name: "Tamer Wahba", email: "tamer@example.com" },
-    { id: "usr-20", name: "Heba Ragab", email: "heba@example.com" },
-  ],
-};
-
-const AGENTS = [
-  { id: "agent-1", name: "Sara Mostafa" },
-  { id: "agent-2", name: "Omar Adel" },
-  { id: "agent-3", name: "Hany Fawzy" },
-  { id: "agent-4", name: "Mariam Tarek" },
-];
-
 const SYSTEM = { id: "system", name: "System", role: "system" };
 
 const asAgent = (a) => (a ? { id: a.id, name: a.name, role: "agent" } : SYSTEM);
 
-const asCustomer = (r) => ({
-  id: r.id || "requester",
-  name: r.name || r.email,
-  role: "customer",
-});
-
 // ---------------------------------------------------------------------------
-// Seed data
+// State
 // ---------------------------------------------------------------------------
 
 let evtSeq = 0;
 let tickets = [];
 let events = [];
+let nextNum = 1001;
 
 function addEvent(ticketId, type, at, fields) {
   const event = {
     id: `evt-${++evtSeq}`,
     ticket_id: ticketId,
     type,
-    created_at: iso(at),
+    created_at: new Date(at).toISOString(),
     ...fields,
   };
 
@@ -85,333 +44,43 @@ function addEvent(ticketId, type, at, fields) {
   return event;
 }
 
-function seedTicket(spec) {
-  const created = NOW - spec.ageMin * MIN;
-  const requester = REQUESTERS[spec.customer.id][spec.requesterIdx || 0];
-  const assignee = spec.agentIdx == null ? null : AGENTS[spec.agentIdx];
-  const customerAuthor = asCustomer(requester);
-  const agentAuthor = asAgent(assignee);
-  const id = spec.id;
-  let last = created;
+// ---------------------------------------------------------------------------
+// JSON file database
+// ---------------------------------------------------------------------------
 
-  const touch = (at) => (last = Math.max(last, Math.min(at, NOW)));
+function saveDb() {
+  fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 
-  addEvent(id, "created", created, {
-    author: customerAuthor,
-    public: true,
-    body: "Ticket created",
-  });
-
-  addEvent(id, "comment", created + 30_000, {
-    author: customerAuthor,
-    public: true,
-    body: spec.description,
-  });
-
-  const move = (from, to, at, author = agentAuthor) => {
-    addEvent(id, "status_changed", at, {
-      author,
-      public: false,
-      from,
-      to,
-      body: `Status changed from ${from} to ${to}`,
-    });
-
-    touch(at);
-  };
-
-  if (spec.status !== "new") {
-    move("new", "open", created + 2 * MIN, SYSTEM);
-  }
-
-  let replyAt = null;
-
-  if (spec.firstReplyMin != null) {
-    replyAt = created + spec.firstReplyMin * MIN;
-
-    addEvent(id, "comment", replyAt, {
-      author: agentAuthor,
-      public: true,
-      body: "Thanks for reaching out. We are looking into this now.",
-    });
-
-    touch(replyAt);
-
-    if (spec.note) {
-      addEvent(id, "comment", replyAt + MIN, {
-        author: agentAuthor,
-        public: false,
-        body: "Internal note: checked the account, escalating if it repeats.",
-      });
-
-      touch(replyAt + MIN);
-    }
-  }
-
-  let state = spec.status === "new" ? "new" : "open";
-
-  if (spec.pendingCycle && replyAt != null && spec.status !== "pending") {
-    move("open", "pending", replyAt + 2 * MIN);
-
-    const back = replyAt + 90 * MIN;
-
-    addEvent(id, "comment", back, {
-      author: customerAuthor,
-      public: true,
-      body: "Here is the extra information you asked for.",
-    });
-
-    touch(back);
-    move("pending", "open", back + MIN, SYSTEM);
-  }
-
-  if (spec.status === "pending") {
-    move("open", "pending", (replyAt ?? created) + 2 * MIN);
-    state = "pending";
-  } else if (spec.status === "in_progress") {
-    move("open", "in_progress", (replyAt ?? created) + 5 * MIN);
-    state = "in_progress";
-  } else if (RESOLVED.includes(spec.status)) {
-    const resolvedAt = created + spec.resolveAfterMin * MIN;
-
-    addEvent(id, "comment", resolvedAt - MIN, {
-      author: agentAuthor,
-      public: true,
-      body: "This is now resolved. Reply if you still see the problem.",
-    });
-
-    move("open", "solved", resolvedAt);
-    state = "solved";
-    spec.resolvedAt = resolvedAt;
-
-    if (spec.status === "closed") {
-      move("solved", "closed", resolvedAt + 1440 * MIN, SYSTEM);
-      state = "closed";
-    }
-  }
-
-  if (state !== spec.status) {
-    throw new Error(`seed ${id}: ended in ${state}, wanted ${spec.status}`);
-  }
-
-  tickets.push({
-    id,
-    title: spec.title,
-    description: spec.description,
-    status: spec.status,
-    priority: spec.priority,
-    created_at: iso(created),
-    updated_at: iso(last),
-    resolved_at: spec.resolvedAt ? iso(spec.resolvedAt) : null,
-    requester,
-    customer: spec.customer,
-    assignee,
-    tags: spec.tags || [],
-    channel: spec.channel || "email",
-    url: `https://tickets.example.test/${id}`,
-  });
+  // Write to a temp file and rename so a crash never leaves a half-written db.
+  const tmp = `${DB_FILE}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify({ evtSeq, nextNum, tickets, events }, null, 2));
+  fs.renameSync(tmp, DB_FILE);
 }
 
-function mulberry32(seed) {
-  let a = seed;
+function loadDb() {
+  let raw;
 
-  return () => {
-    a |= 0x0;
-    a = (a + 0x6d2b79f5) | 0;
-
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-const TITLES = [
-  ["Cannot access billing dashboard", ["billing", "access"]],
-  ["Export report is missing rows", ["reports", "bug"]],
-  ["Password reset email delayed", ["email", "auth"]],
-  ["Mobile app crashes on launch", ["mobile", "bug"]],
-  ["Need invoice for September", ["billing"]],
-  ["API returns intermittent 502", ["api", "bug"]],
-  ["Webhook deliveries are duplicated", ["api", "webhooks"]],
-  ["SSO login loops back to sign-in", ["auth", "sso"]],
-  ["Dashboard charts load slowly", ["performance"]],
-  ["Add a user to our workspace", ["admin"]],
-  ["Two-factor code never arrives", ["auth", "sms"]],
-  ["Refund for duplicate charge", ["billing", "refund"]],
-  ["CSV import rejects valid dates", ["import", "bug"]],
-  ["Request: dark mode for the portal", ["feature-request"]],
-  ["Notification emails go to spam", ["email"]],
-  ["Cannot change the account owner", ["admin"]],
-  ["Search returns stale results", ["search", "bug"]],
-  ["Rate limit hit during nightly sync", ["api", "limits"]],
-  ["Update billing contact details", ["billing", "admin"]],
-  ["Scheduled report did not run", ["reports"]],
-];
-
-const CURATED = [
-  {
-    id: "TCK-1001",
-    title: TITLES[0][0],
-    description: "User receives a 403 after signing in.",
-    status: "open",
-    priority: "high",
-    ageMin: 16 * 60,
-    firstReplyMin: 75,
-    note: true,
-    customer: CUSTOMERS[0],
-    requesterIdx: 0,
-    agentIdx: 1,
-    tags: TITLES[0][1],
-    channel: "email",
-  },
-  {
-    id: "TCK-1002",
-    title: TITLES[1][0],
-    description: "CSV export has fewer rows than the report view.",
-    status: "pending",
-    priority: "normal",
-    ageMin: 38 * 60,
-    firstReplyMin: 40,
-    customer: CUSTOMERS[1],
-    requesterIdx: 0,
-    agentIdx: 0,
-    tags: TITLES[1][1],
-    channel: "web",
-  },
-  {
-    id: "TCK-1003",
-    title: TITLES[2][0],
-    description: "Reset email arrived after 20 minutes.",
-    status: "solved",
-    priority: "low",
-    ageMin: 66 * 60,
-    firstReplyMin: 55,
-    resolveAfterMin: 28 * 60,
-    pendingCycle: true,
-    customer: CUSTOMERS[0],
-    requesterIdx: 1,
-    agentIdx: 2,
-    tags: TITLES[2][1],
-    channel: "email",
-  },
-  {
-    id: "TCK-1004",
-    title: TITLES[3][0],
-    description: "Crash started after version 5.8.1.",
-    status: "open",
-    priority: "urgent",
-    ageMin: 30,
-    firstReplyMin: null,
-    customer: CUSTOMERS[2],
-    requesterIdx: 0,
-    agentIdx: 1,
-    tags: TITLES[3][1],
-    channel: "chat",
-  },
-  {
-    id: "TCK-1005",
-    title: TITLES[4][0],
-    description: "Please send a tax invoice for September.",
-    status: "closed",
-    priority: "normal",
-    ageMin: 8 * 1440,
-    firstReplyMin: 120,
-    resolveAfterMin: 4 * 1440,
-    customer: CUSTOMERS[1],
-    requesterIdx: 1,
-    agentIdx: 0,
-    tags: TITLES[4][1],
-    channel: "email",
-  },
-  {
-    id: "TCK-1006",
-    title: TITLES[5][0],
-    description: "Intermittent gateway errors from the partner API.",
-    status: "in_progress",
-    priority: "high",
-    ageMin: 3 * 60,
-    firstReplyMin: 20,
-    note: true,
-    customer: CUSTOMERS[2],
-    requesterIdx: 1,
-    agentIdx: 3,
-    tags: TITLES[5][1],
-    channel: "web",
-  },
-];
-
-function seed() {
-  evtSeq = 0;
-  tickets = [];
-  events = [];
-
-  CURATED.forEach((spec) => seedTicket({ ...spec }));
-
-  const rng = mulberry32(42);
-  const pick = (arr) => arr[Math.floor(rng() * arr.length)];
-
-  for (let i = 0; i < 30; i += 1) {
-    const ageMin = Math.round(45 + Math.pow(rng(), 1.6) * 40 * 1440);
-
-    let status;
-
-    if (ageMin < 120) {
-      status = pick(["new", "open"]);
-    } else if (ageMin < 1440) {
-      status = pick(["open", "open", "in_progress", "pending", "solved"]);
-    } else if (ageMin < 7 * 1440) {
-      status = pick([
-        "open",
-        "pending",
-        "in_progress",
-        "solved",
-        "solved",
-        "closed",
-      ]);
-    } else {
-      status = pick(["solved", "closed", "closed", "closed", "open"]);
-    }
-
-    const answered = status !== "new" && !(status === "open" && rng() < 0.12);
-
-    const firstReplyMin = answered
-      ? Math.min(5 + Math.floor(rng() * 180), ageMin - 5)
-      : null;
-
-    const resolveAfterMin = RESOLVED.includes(status)
-      ? Math.min(
-          ageMin - 2,
-          firstReplyMin + 30 + Math.floor(rng() * ageMin * 0.6),
-        )
-      : null;
-
-    const [title, tags] = TITLES[(i + 6) % TITLES.length];
-    const customer = pick(CUSTOMERS);
-
-    seedTicket({
-      id: `TCK-${1007 + i}`,
-      title,
-      description: `${title}. Reported by the customer, details attached to the account.`,
-      status,
-      priority: pick(["low", "normal", "normal", "high", "urgent"]),
-      ageMin,
-      firstReplyMin,
-      resolveAfterMin,
-      pendingCycle: RESOLVED.includes(status) && rng() < 0.3,
-      note: rng() < 0.3,
-      customer,
-      requesterIdx: rng() < 0.5 ? 0 : 1,
-      agentIdx: status === "new" ? null : Math.floor(rng() * AGENTS.length),
-      tags,
-      channel: pick(["email", "chat", "web"]),
-    });
+  try {
+    raw = fs.readFileSync(DB_FILE, "utf8");
+  } catch (e) {
+    if (e.code === "ENOENT") return false;
+    throw e;
   }
+
+  const db = JSON.parse(raw);
+
+  if (!Array.isArray(db.tickets) || !Array.isArray(db.events)) {
+    throw new Error(`${DB_FILE} is not a valid database file`);
+  }
+
+  ({ evtSeq, nextNum, tickets, events } = db);
+  return true;
 }
 
-seed();
-
-let nextNum = 1000 + tickets.length + 1;
+// Use the existing database, or create an empty one.
+if (!loadDb()) {
+  saveDb();
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -838,6 +507,7 @@ async function handleRequest(req, res) {
       }
 
       setStatus(ticket, status, SYSTEM);
+      saveDb();
 
       return send(res, 201, { data: ticket });
     } catch (e) {
@@ -907,6 +577,8 @@ async function handleRequest(req, res) {
         setStatus(ticket, patch.status);
       }
 
+      saveDb();
+
       return send(res, 200, { data: ticket });
     } catch (e) {
       return send(res, 400, {
@@ -955,6 +627,7 @@ async function handleRequest(req, res) {
       });
 
       ticket.updated_at = event.created_at;
+      saveDb();
 
       return send(res, 201, { data: event });
     } catch (e) {
@@ -968,7 +641,7 @@ async function handleRequest(req, res) {
   if (url.pathname === "/api/reset" && req.method === "POST") {
     return send(res, 403, {
       error: "disabled",
-      message: "Restart the app to reset the in-memory demo data.",
+      message: "Delete the database file (DB_FILE) and restart the app to reset the data.",
     });
   }
 

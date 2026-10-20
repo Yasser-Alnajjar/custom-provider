@@ -2,7 +2,7 @@
 
 A tiny, dependency-free mock ticketing provider for testing Elapsed's Custom Ticket Provider integration. It is **not** a production ticketing system and does not modify the Elapsed repository.
 
-It serves 36 tickets with realistic history: customer and agent comments, internal notes, status transitions with timestamps, closure times, tags and channels. All timestamps are generated relative to when the server starts, so the data always sits inside Elapsed's import window. Data lives in memory; restart to reset.
+It stores tickets with their history: customer and agent comments, internal notes, status transitions with timestamps, closure times, tags and channels. It starts with no tickets; create them from the UI or the API. Data is saved in a JSON file database, `data/db.json` (set `DB_FILE` to change it). If the file does not exist it is created empty; delete it and restart to reset.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ Import the repo in Vercel (framework preset **Other**, no build settings needed)
 
 Vercel serves the app over HTTPS on a public host, so Elapsed can use `https://<your-app>.vercel.app/elapsed-config.json` without `CUSTOM_PROVIDER_ALLOW_PRIVATE_HOSTS`.
 
-Data is still in memory: each new function instance starts from the seed data, so changes made through the UI or API can disappear after a cold start or differ between instances.
+On Vercel the project files are read-only, so the database is written to `/tmp/db.json`. `/tmp` belongs to a single function instance: each new instance starts again with an empty database, so changes made through the UI or API can disappear after a cold start or differ between instances.
 
 ## The lab UI
 
@@ -90,10 +90,10 @@ Elapsed only reads from this API. The write routes exist for the lab UI and for 
 
 ```bash
 curl -X POST localhost:4100/api/events -H 'Authorization: Bearer demo_elapsed_token' \
-  -d '{"ticket_id":"TCK-1004","body":"Looking into it","author":{"name":"Omar","role":"agent"}}'
+  -d '{"ticket_id":"TCK-1001","body":"Looking into it","author":{"name":"Omar","role":"agent"}}'
 ```
 
-`TCK-1004` is urgent and unanswered, so it starts with a live first-response clock.
+Ticket IDs start at `TCK-1001`.
 
 ## Limits of this API (what the UI cannot show)
 
