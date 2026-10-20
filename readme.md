@@ -17,6 +17,14 @@ node server.js
 
 Open http://localhost:4100 for the lab UI. Set `PORT` and `API_TOKEN` to change the port (default `4100`) or the bearer token (default `demo_elapsed_token`).
 
+## Deploy to Vercel
+
+Import the repo in Vercel (framework preset **Other**, no build settings needed) or run `npx vercel`. `public/` is served as static files and `api/index.js` runs `server.js` as a serverless function; `vercel.json` routes `/api/*`, `/health` and `/elapsed-config.json` to it and falls back to the app shell for UI routes. Set `API_TOKEN` in the project's environment variables to change the token.
+
+Vercel serves the app over HTTPS on a public host, so Elapsed can use `https://<your-app>.vercel.app/elapsed-config.json` without `CUSTOM_PROVIDER_ALLOW_PRIVATE_HOSTS`.
+
+Data is still in memory: each new function instance starts from the seed data, so changes made through the UI or API can disappear after a cold start or differ between instances.
+
 ## The lab UI
 
 The UI is a small client-side app (vanilla ES modules, no framework) served by the same server, so it always talks to the same origin and port. Routes survive a refresh; filters, sort and page live in the query string.

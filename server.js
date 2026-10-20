@@ -1,16 +1,10 @@
 const http = require("node:http");
-const https = require("node:https");
 const fs = require("node:fs");
 const path = require("node:path");
 const { URL } = require("node:url");
 
 const PORT = Number(process.env.PORT || 4100);
-const HTTPS_PORT = Number(process.env.HTTPS_PORT || 4443);
-const SSL_KEY_PATH = process.env.SSL_KEY_PATH || "./certs/localhost-key.pem";
-
-const SSL_CERT_PATH = process.env.SSL_CERT_PATH || "./certs/localhost-cert.pem";
-
-const API_TOKEN = process.env.API_TOKEN || "demo_elapsed_token";
+const API_TOKEN = process.env.API_TOKEN || "demo_elapsed";
 const publicDir = path.join(__dirname, "public");
 
 const MIN = 60_000;
@@ -603,16 +597,23 @@ function elapsedConfig(origin) {
 }
 
 // ---------------------------------------------------------------------------
-// Shared request handler for HTTP and HTTPS
+// Request handler (used by `node server.js` locally and by api/index.js on Vercel)
 // ---------------------------------------------------------------------------
 
-async function handleRequest(req, res) {
-  const protocol = req.socket.encrypted ? "https" : "http";
+// Behind a proxy (Vercel) the original protocol and host arrive as forwarded headers.
+const firstHeader = (value) =>
+  value ? String(value).split(",")[0].trim() : "";
 
-  const url = new URL(
-    req.url,
-    `${protocol}://${req.headers.host || `127.0.0.1:${PORT}`}`,
-  );
+async function handleRequest(req, res) {
+  const protocol =
+    firstHeader(req.headers["x-forwarded-proto"]) ||
+    (req.socket?.encrypted ? "https" : "http");
+  const hostHeader =
+    firstHeader(req.headers["x-forwarded-host"]) ||
+    req.headers.host ||
+    `127.0.0.1:${PORT}`;
+
+  const url = new URL(req.url, `${protocol}://${hostHeader}`);
 
   if (req.method === "OPTIONS") {
     return send(res, 204, {});
@@ -627,10 +628,7 @@ async function handleRequest(req, res) {
   }
 
   if (url.pathname === "/elapsed-config.json") {
-    const host = (req.headers.host || `127.0.0.1:${PORT}`).replace(
-      /^localhost(?=:|$)/,
-      "127.0.0.1",
-    );
+    const host = hostHeader.replace(/^localhost(?=:|$)/, "127.0.0.1");
 
     return send(res, 200, elapsedConfig(`${protocol}://${host}`));
   }
@@ -1019,48 +1017,17 @@ async function handleRequest(req, res) {
 }
 
 // ---------------------------------------------------------------------------
-// Start HTTP and HTTPS servers
+// Start a local server when run directly; Vercel imports the handler instead
 // ---------------------------------------------------------------------------
 
-// HTTP works without certificates.
-const httpServer = http.createServer(handleRequest);
+module.exports = handleRequest;
 
-httpServer.listen(PORT, "0.0.0.0", () => {
-  console.log(
-    `Acme Desk demo running on http://localhost:${PORT}\n` +
-      `${tickets.length} tickets, ${events.length} events.\n` +
-      `Elapsed config: http://127.0.0.1:${PORT}/elapsed-config.json`,
-  );
-});
-
-// HTTPS starts only when both certificate files are configured.
-if (SSL_KEY_PATH && SSL_CERT_PATH) {
-  try {
-    const httpsOptions = {
-      key: fs.readFileSync(path.resolve(__dirname, SSL_KEY_PATH)),
-      cert: fs.readFileSync(path.resolve(__dirname, SSL_CERT_PATH)),
-    };
-
-    const httpsServer = https.createServer(httpsOptions, handleRequest);
-
-    httpsServer.listen(HTTPS_PORT, "0.0.0.0", () => {
-      console.log(
-        `Acme Desk demo running on https://localhost:${HTTPS_PORT}\n` +
-          `Elapsed config: https://127.0.0.1:${HTTPS_PORT}/elapsed-config.json`,
-      );
-    });
-
-    httpsServer.on("error", (error) => {
-      console.error("HTTPS server error:", error.message);
-    });
-  } catch (error) {
-    console.error(
-      "HTTPS could not start. Check SSL_KEY_PATH and SSL_CERT_PATH:",
-      error.message,
+if (require.main === module) {
+  http.createServer(handleRequest).listen(PORT, "0.0.0.0", () => {
+    console.log(
+      `Acme Desk demo running on http://localhost:${PORT}\n` +
+        `${tickets.length} tickets, ${events.length} events.\n` +
+        `Elapsed config: http://127.0.0.1:${PORT}/elapsed-config.json`,
     );
-  }
-} else {
-  console.log(
-    "HTTPS is disabled. Set SSL_KEY_PATH and SSL_CERT_PATH to enable it.",
-  );
+  });
 }

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/(api/.*|health|elapsed-config\\.json)", "destination": "/api" },
+    { "source": "/([^.]*)", "destination": "/index.html" }
+  ]
+}
