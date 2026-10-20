@@ -11,7 +11,9 @@ const publicDir = path.join(__dirname, "public");
 // only writable place (and it does not outlive the function instance).
 const DB_FILE =
   process.env.DB_FILE ||
-  (process.env.VERCEL ? "/tmp/db.json" : path.join(__dirname, "data", "db.json"));
+  (process.env.VERCEL
+    ? "/tmp/db.json"
+    : path.join(__dirname, "data", "db.json"));
 
 const STATUSES = ["new", "open", "pending", "in_progress", "solved", "closed"];
 const RESOLVED = ["solved", "closed"];
@@ -53,7 +55,10 @@ function saveDb() {
 
   // Write to a temp file and rename so a crash never leaves a half-written db.
   const tmp = `${DB_FILE}.tmp`;
-  fs.writeFileSync(tmp, JSON.stringify({ evtSeq, nextNum, tickets, events }, null, 2));
+  fs.writeFileSync(
+    tmp,
+    JSON.stringify({ evtSeq, nextNum, tickets, events }, null, 2),
+  );
   fs.renameSync(tmp, DB_FILE);
 }
 
@@ -641,7 +646,8 @@ async function handleRequest(req, res) {
   if (url.pathname === "/api/reset" && req.method === "POST") {
     return send(res, 403, {
       error: "disabled",
-      message: "Delete the database file (DB_FILE) and restart the app to reset the data.",
+      message:
+        "Delete the database file (DB_FILE) and restart the app to reset the data.",
     });
   }
 

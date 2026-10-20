@@ -15,7 +15,7 @@ It stores tickets with their history: customer and agent comments, internal note
 node server.js
 ```
 
-Open http://localhost:4100 for the lab UI. Set `PORT` and `API_TOKEN` to change the port (default `4100`) or the bearer token (default `demo_elapsed_token`).
+Open http://localhost:4100 for the lab UI. Set `PORT` and `API_TOKEN` to change the port (default `4100`) or the bearer token (default `demo_elapsed`).
 
 ## Deploy to Vercel
 
@@ -60,7 +60,7 @@ npm run build:css    # or: npm run watch:css
 1. In Elapsed's `.env`, set `CUSTOM_PROVIDER_ALLOW_PRIVATE_HOSTS=1` (without it Elapsed only accepts public HTTPS hosts) and restart the web app and worker.
 2. Make sure the organization has the Custom REST beta flag on.
 3. Go to **Settings → Integrations → Custom REST**, open the **Advanced (JSON)** step, paste the output of http://127.0.0.1:4100/elapsed-config.json, and apply it.
-4. In the **Connection** step, enter the bearer token (`demo_elapsed_token`). Secrets are never part of the JSON.
+4. In the **Connection** step, enter the bearer token (`demo_elapsed`). Secrets are never part of the JSON.
 5. Run **Test**, **Sample** and **Preview** on the **Review** step, then activate.
 
 Use `127.0.0.1`, not `localhost`: Node may resolve `localhost` to IPv6 while this server listens on IPv4. If Elapsed runs in Docker, replace the host in `connection.baseUrl` with `host.docker.internal`.
@@ -89,7 +89,7 @@ Statuses: `new`, `open`, `pending`, `in_progress`, `solved`, `closed`. Prioritie
 Elapsed only reads from this API. The write routes exist for the lab UI and for you to change data and watch Elapsed pick it up on the next sync, for example:
 
 ```bash
-curl -X POST localhost:4100/api/events -H 'Authorization: Bearer demo_elapsed_token' \
+curl -X POST localhost:4100/api/events -H 'Authorization: Bearer demo_elapsed' \
   -d '{"ticket_id":"TCK-1001","body":"Looking into it","author":{"name":"Omar","role":"agent"}}'
 ```
 

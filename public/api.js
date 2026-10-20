@@ -1,7 +1,7 @@
 // The only module that talks to the provider API. Everything it returns is
 // the server's own response; nothing is mocked or defaulted here.
 
-export const DEFAULT_TOKEN = "demo_elapsed_token";
+export const DEFAULT_TOKEN = "demo_elapsed";
 const TOKEN_KEY = "acmedesk.token";
 const ACTOR_KEY = "acmedesk.actor";
 
