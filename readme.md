@@ -2,7 +2,7 @@
 
 A tiny, dependency-free mock ticketing provider for testing Elapsed's Custom Ticket Provider integration. It is **not** a production ticketing system and does not modify the Elapsed repository.
 
-It stores tickets with their history: customer and agent comments, internal notes, status transitions with timestamps, closure times, tags and channels. It starts with no tickets; create them from the UI or the API. Data is saved in a JSON file database, `data/db.json` (set `DB_FILE` to change it). If the file does not exist it is created empty; delete it and restart to reset.
+It stores tickets with their history: customer and agent comments, internal notes, status transitions with timestamps, closure times, tags and channels. It starts with no tickets; create them from the UI or the API. Data is saved in a JSON file database, `data/db.json` (set `DB_FILE` to change it), or in Redis when it is configured (see [Deploy to Vercel](#deploy-to-vercel)). If the database does not exist it is created empty; delete it and restart to reset.
 
 ## Requirements
 
@@ -23,7 +23,14 @@ Import the repo in Vercel (framework preset **Other**, no build settings needed)
 
 Vercel serves the app over HTTPS on a public host, so Elapsed can use `https://<your-app>.vercel.app/elapsed-config.json` without `CUSTOM_PROVIDER_ALLOW_PRIVATE_HOSTS`.
 
-**Vercel cannot store data reliably.** The project files are read-only there, so the database is written to `/tmp/db.json`. Each serverless instance has its own `/tmp`, and it is wiped when the instance shuts down. A ticket created on one instance is missing on the others, and it disappears after a cold start. The UI then shows "Ticket … does not exist on the server". Use Vercel only for short demos where losing data is fine.
+**Add Redis for storage.** A serverless function has no disk that lasts, and each instance has its own memory, so without Redis a ticket created on one instance is missing on the others ("Ticket … does not exist on the server"). To fix it:
+
+1. In the Vercel project, open **Storage** (or the Marketplace) and add **Upstash for Redis**, connected to this project. It sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`. An Upstash database created on upstash.com works too: set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
+2. Redeploy.
+
+The whole database is one JSON value under the key `acmedesk:db` (set `REDIS_KEY` to change it). Every API request reads it, and every change writes it back, so all instances see the same tickets. To reset the data, delete that key (`DEL acmedesk:db` in the Upstash console). Requests are handled one at a time within an instance, but two instances changing data at the same moment can overwrite each other's change; that is fine for a demo lab.
+
+Without Redis the server falls back to `/tmp/db.json`, which is per instance and wiped on cold starts. Use that only for short demos where losing data is fine.
 
 ## Deploy for reliable storage (VPS)
 

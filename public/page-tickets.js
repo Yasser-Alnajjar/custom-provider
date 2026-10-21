@@ -149,7 +149,7 @@ export async function ticketsPage(ctx) {
         ${sortHeader("STATUS", "status", f.sort)}${sortHeader("PRIORITY", "priority", f.sort)}${sortHeader("UPDATED", "updated_at", f.sort)}<th></th>
       </tr></thead><tbody>${body}</tbody></table></div>
       ${filtered.length ? pager({ total: filtered.length, page: f.page, size: f.size }) : ""}
-      <div class="table-footer"><span>Demo data is stored in memory and resets when the server restarts.</span><span>REST API · JSON</span></div>`;
+      <div class="table-footer"><span>Data is stored in the server's database: Redis, or a JSON file.</span><span>REST API · JSON</span></div>`;
   }
 
   async function refresh() {

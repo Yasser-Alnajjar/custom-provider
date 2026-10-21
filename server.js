@@ -7,8 +7,17 @@ const PORT = Number(process.env.PORT || 4100);
 const API_TOKEN = process.env.API_TOKEN || "demo_elapsed";
 const publicDir = path.join(__dirname, "public");
 
-// JSON file database. On Vercel the project files are read-only, so /tmp is the
-// only writable place (and it does not outlive the function instance).
+// Redis (Upstash REST API) holds the database when configured. This is what makes
+// Vercel work: every serverless instance reads and writes the same key. Vercel's
+// Upstash integration sets KV_REST_API_*, Upstash itself UPSTASH_REDIS_REST_*.
+const REDIS_URL =
+  process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const REDIS_TOKEN =
+  process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+const REDIS_KEY = process.env.REDIS_KEY || "acmedesk:db";
+
+// Otherwise a JSON file. On Vercel the project files are read-only, so /tmp is
+// the only writable place (and it does not outlive the function instance).
 const DB_FILE =
   process.env.DB_FILE ||
   (process.env.VERCEL
@@ -47,44 +56,78 @@ function addEvent(ticketId, type, at, fields) {
 }
 
 // ---------------------------------------------------------------------------
-// JSON file database
+// Database (Redis or JSON file)
 // ---------------------------------------------------------------------------
 
-function saveDb() {
+class StorageError extends Error {}
+
+const DB_NAME = REDIS_URL ? `Redis key ${REDIS_KEY}` : DB_FILE;
+
+async function redis(command) {
+  const res = await fetch(REDIS_URL, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+    body: JSON.stringify(command),
+  });
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok || !data || data.error) {
+    throw new StorageError(`Redis: ${data?.error || `HTTP ${res.status}`}`);
+  }
+
+  return data.result;
+}
+
+async function saveDb() {
+  const raw = JSON.stringify({ evtSeq, nextNum, tickets, events }, null, 2);
+
+  if (REDIS_URL) {
+    await redis(["SET", REDIS_KEY, raw]);
+    return;
+  }
+
   fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 
   // Write to a temp file and rename so a crash never leaves a half-written db.
   const tmp = `${DB_FILE}.tmp`;
-  fs.writeFileSync(
-    tmp,
-    JSON.stringify({ evtSeq, nextNum, tickets, events }, null, 2),
-  );
+  fs.writeFileSync(tmp, raw);
   fs.renameSync(tmp, DB_FILE);
 }
 
-function loadDb() {
-  let raw;
+// Replaces the in-memory state with the stored database (empty if none yet).
+async function loadDb() {
+  let raw = null;
 
-  try {
-    raw = fs.readFileSync(DB_FILE, "utf8");
-  } catch (e) {
-    if (e.code === "ENOENT") return false;
-    throw e;
+  if (REDIS_URL) {
+    raw = await redis(["GET", REDIS_KEY]);
+  } else {
+    try {
+      raw = fs.readFileSync(DB_FILE, "utf8");
+    } catch (e) {
+      if (e.code !== "ENOENT") throw e;
+    }
   }
 
-  const db = JSON.parse(raw);
+  const db = raw
+    ? JSON.parse(raw)
+    : { evtSeq: 0, nextNum: 1001, tickets: [], events: [] };
 
   if (!Array.isArray(db.tickets) || !Array.isArray(db.events)) {
-    throw new Error(`${DB_FILE} is not a valid database file`);
+    throw new Error(`${DB_NAME} is not a valid database`);
   }
 
   ({ evtSeq, nextNum, tickets, events } = db);
-  return true;
+  return Boolean(raw);
 }
 
-// Use the existing database, or create an empty one.
-if (!loadDb()) {
-  saveDb();
+// API requests run one at a time, so a request never loads the database while
+// another is between changing the state and saving it.
+let queue = Promise.resolve();
+
+function serialized(fn) {
+  const run = queue.then(fn);
+  queue = run.catch(() => {});
+  return run;
 }
 
 // ---------------------------------------------------------------------------
@@ -271,49 +314,10 @@ function elapsedConfig(origin) {
 }
 
 // ---------------------------------------------------------------------------
-// Request handler (used by `node server.js` locally and by api/index.js on Vercel)
+// API routes (the database is loaded before each request)
 // ---------------------------------------------------------------------------
 
-// Behind a proxy (Vercel) the original protocol and host arrive as forwarded headers.
-const firstHeader = (value) =>
-  value ? String(value).split(",")[0].trim() : "";
-
-async function handleRequest(req, res) {
-  const protocol =
-    firstHeader(req.headers["x-forwarded-proto"]) ||
-    (req.socket?.encrypted ? "https" : "http");
-  const hostHeader =
-    firstHeader(req.headers["x-forwarded-host"]) ||
-    req.headers.host ||
-    `127.0.0.1:${PORT}`;
-
-  const url = new URL(req.url, `${protocol}://${hostHeader}`);
-
-  if (req.method === "OPTIONS") {
-    return send(res, 204, {});
-  }
-
-  if (url.pathname === "/health") {
-    return send(res, 200, {
-      ok: true,
-      provider: "Acme Desk (Demo)",
-      version: "1.1.0",
-    });
-  }
-
-  if (url.pathname === "/elapsed-config.json") {
-    const host = hostHeader.replace(/^localhost(?=:|$)/, "127.0.0.1");
-
-    return send(res, 200, elapsedConfig(`${protocol}://${host}`));
-  }
-
-  if (url.pathname.startsWith("/api/") && !authorized(req)) {
-    return send(res, 401, {
-      error: "unauthorized",
-      message: "Use Authorization: Bearer <API_TOKEN>.",
-    });
-  }
-
+async function handleApi(req, res, url) {
   if (url.pathname === "/api/meta") {
     return send(res, 200, {
       provider: "Acme Desk (Demo)",
@@ -512,10 +516,11 @@ async function handleRequest(req, res) {
       }
 
       setStatus(ticket, status, SYSTEM);
-      saveDb();
+      await saveDb();
 
       return send(res, 201, { data: ticket });
     } catch (e) {
+      if (e instanceof StorageError) throw e;
       return send(res, 400, {
         error: "bad_request",
         message: e.message,
@@ -582,10 +587,11 @@ async function handleRequest(req, res) {
         setStatus(ticket, patch.status);
       }
 
-      saveDb();
+      await saveDb();
 
       return send(res, 200, { data: ticket });
     } catch (e) {
+      if (e instanceof StorageError) throw e;
       return send(res, 400, {
         error: "bad_request",
         message: e.message,
@@ -632,10 +638,11 @@ async function handleRequest(req, res) {
       });
 
       ticket.updated_at = event.created_at;
-      saveDb();
+      await saveDb();
 
       return send(res, 201, { data: event });
     } catch (e) {
+      if (e instanceof StorageError) throw e;
       return send(res, 400, {
         error: "bad_request",
         message: e.message,
@@ -655,6 +662,67 @@ async function handleRequest(req, res) {
     return send(res, 404, {
       error: "not_found",
       message: "Unknown API endpoint",
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Request handler (used by `node server.js` locally and by api/index.js on Vercel)
+// ---------------------------------------------------------------------------
+
+// Behind a proxy (Vercel) the original protocol and host arrive as forwarded headers.
+const firstHeader = (value) =>
+  value ? String(value).split(",")[0].trim() : "";
+
+async function handleRequest(req, res) {
+  const protocol =
+    firstHeader(req.headers["x-forwarded-proto"]) ||
+    (req.socket?.encrypted ? "https" : "http");
+  const hostHeader =
+    firstHeader(req.headers["x-forwarded-host"]) ||
+    req.headers.host ||
+    `127.0.0.1:${PORT}`;
+
+  const url = new URL(req.url, `${protocol}://${hostHeader}`);
+
+  if (req.method === "OPTIONS") {
+    return send(res, 204, {});
+  }
+
+  if (url.pathname === "/health") {
+    return send(res, 200, {
+      ok: true,
+      provider: "Acme Desk (Demo)",
+      version: "1.1.0",
+    });
+  }
+
+  if (url.pathname === "/elapsed-config.json") {
+    const host = hostHeader.replace(/^localhost(?=:|$)/, "127.0.0.1");
+
+    return send(res, 200, elapsedConfig(`${protocol}://${host}`));
+  }
+
+  if (url.pathname.startsWith("/api/") && !authorized(req)) {
+    return send(res, 401, {
+      error: "unauthorized",
+      message: "Use Authorization: Bearer <API_TOKEN>.",
+    });
+  }
+
+  if (url.pathname.startsWith("/api/")) {
+    return serialized(async () => {
+      try {
+        await loadDb();
+        return await handleApi(req, res, url);
+      } catch (e) {
+        if (!(e instanceof StorageError)) throw e;
+
+        return send(res, 503, {
+          error: "storage_unavailable",
+          message: e.message,
+        });
+      }
     });
   }
 
@@ -702,11 +770,16 @@ async function handleRequest(req, res) {
 module.exports = handleRequest;
 
 if (require.main === module) {
-  http.createServer(handleRequest).listen(PORT, "0.0.0.0", () => {
-    console.log(
-      `Acme Desk demo running on http://localhost:${PORT}\n` +
-        `${tickets.length} tickets, ${events.length} events.\n` +
-        `Elapsed config: http://127.0.0.1:${PORT}/elapsed-config.json`,
-    );
-  });
+  // Use the existing database, or create an empty one.
+  loadDb()
+    .then((found) => found || saveDb())
+    .then(() => {
+      http.createServer(handleRequest).listen(PORT, "0.0.0.0", () => {
+        console.log(
+          `Acme Desk demo running on http://localhost:${PORT}\n` +
+            `${tickets.length} tickets, ${events.length} events in ${DB_NAME}.\n` +
+            `Elapsed config: http://127.0.0.1:${PORT}/elapsed-config.json`,
+        );
+      });
+    });
 }
