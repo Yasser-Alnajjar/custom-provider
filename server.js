@@ -346,7 +346,7 @@ function elapsedConfig(origin) {
     importWindowDays: 90,
     slaMode: "full",
     creationActor: { type: "first_comment_author" },
-    ticketUrlTemplate: "https://tickets.example.test/{id}",
+    ticketUrlTemplate: `http://127.0.0.1:${PORT}/tickets/{id}`,
   };
 }
 
