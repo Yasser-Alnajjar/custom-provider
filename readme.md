@@ -28,7 +28,7 @@ Vercel serves the app over HTTPS on a public host, so Elapsed can use `https://<
 1. In the Vercel project, open **Storage** (or the Marketplace) and add **Upstash for Redis**, connected to this project. It sets `KV_REST_API_URL` and `KV_REST_API_TOKEN`. An Upstash database created on upstash.com works too: set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 2. Redeploy.
 
-The whole database is one JSON value under the key `acmedesk:db` (set `REDIS_KEY` to change it). Every API request reads it, and every change writes it back, so all instances see the same tickets. To reset the data, delete that key (`DEL acmedesk:db` in the Upstash console). Requests are handled one at a time within an instance, but two instances changing data at the same moment can overwrite each other's change; that is fine for a demo lab.
+The whole database is one JSON value under the key `acmedesk:db` (set `REDIS_KEY` to change it). Every API request reads it, and every change writes it back, so all instances see the same tickets. A save only succeeds if no other instance saved since the request read the data (a revision counter in `acmedesk:db:rev`); otherwise the request runs again on the newer data, so concurrent changes are not lost. To reset the data, delete both keys (`DEL acmedesk:db acmedesk:db:rev` in the Upstash console).
 
 Without Redis the server falls back to `/tmp/db.json`, which is per instance and wiped on cold starts. Use that only for short demos where losing data is fine.
 

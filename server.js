@@ -61,14 +61,33 @@ function addEvent(ticketId, type, at, fields) {
 
 class StorageError extends Error {}
 
+// Another instance saved the database after this request loaded it.
+class ConflictError extends StorageError {}
+
 const DB_NAME = REDIS_URL ? `Redis key ${REDIS_KEY}` : DB_FILE;
+const REV_KEY = `${REDIS_KEY}:rev`;
+
+// Saves only if the revision is still the one we loaded, then bumps it.
+const SAVE_SCRIPT = `
+if (redis.call("GET", KEYS[2]) or "0") ~= ARGV[1] then return 0 end
+redis.call("SET", KEYS[1], ARGV[2])
+return redis.call("INCR", KEYS[2])`;
+
+let loadedRev = "0";
 
 async function redis(command) {
-  const res = await fetch(REDIS_URL, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
-    body: JSON.stringify(command),
-  });
+  let res;
+
+  try {
+    res = await fetch(REDIS_URL, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+      body: JSON.stringify(command),
+    });
+  } catch (e) {
+    throw new StorageError(`Redis: ${e.cause?.code || e.message}`);
+  }
+
   const data = await res.json().catch(() => null);
 
   if (!res.ok || !data || data.error) {
@@ -82,7 +101,19 @@ async function saveDb() {
   const raw = JSON.stringify({ evtSeq, nextNum, tickets, events }, null, 2);
 
   if (REDIS_URL) {
-    await redis(["SET", REDIS_KEY, raw]);
+    const rev = await redis([
+      "EVAL",
+      SAVE_SCRIPT,
+      "2",
+      REDIS_KEY,
+      REV_KEY,
+      loadedRev,
+      raw,
+    ]);
+
+    if (!rev)
+      throw new ConflictError("Redis: the database changed during the request");
+    loadedRev = String(rev);
     return;
   }
 
@@ -99,7 +130,10 @@ async function loadDb() {
   let raw = null;
 
   if (REDIS_URL) {
-    raw = await redis(["GET", REDIS_KEY]);
+    const [value, rev] = await redis(["MGET", REDIS_KEY, REV_KEY]);
+
+    raw = value;
+    loadedRev = rev || "0";
   } else {
     try {
       raw = fs.readFileSync(DB_FILE, "utf8");
@@ -154,8 +188,9 @@ function send(res, status, body, type = "application/json; charset=utf-8") {
   );
 }
 
+// Cached on the request, so a retried request reads the same body again.
 function readBody(req) {
-  return new Promise((resolve, reject) => {
+  req.parsedBody ??= new Promise((resolve, reject) => {
     let raw = "";
 
     req.on("data", (chunk) => {
@@ -177,6 +212,8 @@ function readBody(req) {
 
     req.on("error", reject);
   });
+
+  return req.parsedBody;
 }
 
 function authorized(req) {
@@ -713,8 +750,16 @@ async function handleRequest(req, res) {
   if (url.pathname.startsWith("/api/")) {
     return serialized(async () => {
       try {
-        await loadDb();
-        return await handleApi(req, res, url);
+        // A conflict is thrown before the response is sent, so the request
+        // can run again on the newer data.
+        for (let attempt = 1; ; attempt++) {
+          try {
+            await loadDb();
+            return await handleApi(req, res, url);
+          } catch (e) {
+            if (!(e instanceof ConflictError) || attempt === 5) throw e;
+          }
+        }
       } catch (e) {
         if (!(e instanceof StorageError)) throw e;
 
@@ -770,9 +815,10 @@ async function handleRequest(req, res) {
 module.exports = handleRequest;
 
 if (require.main === module) {
-  // Use the existing database, or create an empty one.
+  // Use the existing database, or create an empty file. Redis needs nothing
+  // created: a missing key reads as an empty database.
   loadDb()
-    .then((found) => found || saveDb())
+    .then((found) => found || REDIS_URL || saveDb())
     .then(() => {
       http.createServer(handleRequest).listen(PORT, "0.0.0.0", () => {
         console.log(
