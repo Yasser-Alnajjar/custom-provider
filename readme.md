@@ -23,7 +23,18 @@ Import the repo in Vercel (framework preset **Other**, no build settings needed)
 
 Vercel serves the app over HTTPS on a public host, so Elapsed can use `https://<your-app>.vercel.app/elapsed-config.json` without `CUSTOM_PROVIDER_ALLOW_PRIVATE_HOSTS`.
 
-On Vercel the project files are read-only, so the database is written to `/tmp/db.json`. `/tmp` belongs to a single function instance: each new instance starts again with an empty database, so changes made through the UI or API can disappear after a cold start or differ between instances.
+**Vercel cannot store data reliably.** The project files are read-only there, so the database is written to `/tmp/db.json`. Each serverless instance has its own `/tmp`, and it is wiped when the instance shuts down. A ticket created on one instance is missing on the others, and it disappears after a cold start. The UI then shows "Ticket … does not exist on the server". Use Vercel only for short demos where losing data is fine.
+
+## Deploy for reliable storage (VPS)
+
+For data that persists, run the server as one long-lived Node.js process on a machine with a writable disk, such as a VPS:
+
+```bash
+git clone <repo> && cd custom-provider
+API_TOKEN=<your-token> PORT=4100 node server.js
+```
+
+Keep it running with a process manager (for example systemd or `pm2 start server.js`), and put it behind a reverse proxy with HTTPS (for example Caddy or nginx) so Elapsed can reach it. Data is kept in `data/db.json` next to `server.js`. Back up that file, or set `DB_FILE` to a path on a persistent volume. Run a single process only: two processes writing the same file would overwrite each other's changes.
 
 ## The lab UI
 
