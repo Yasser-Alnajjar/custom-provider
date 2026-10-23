@@ -1,4 +1,4 @@
-import type { Pagination, Ticket, TicketEvent } from "@/lib/types";
+import type { Pagination, PersonKind, PersonRecord, Ticket, TicketEvent } from "@/lib/types";
 import { getToken } from "./storage";
 
 // The only module that talks to the provider API. Everything it returns is the
@@ -101,6 +101,21 @@ export const createTicket = async (body: Record<string, unknown>) =>
 
 export const patchTicket = async (id: string, patch: Record<string, unknown>) =>
   (await api<{ data: Ticket }>(`/api/tickets/${enc(id)}`, { method: "PATCH", body: patch })).data;
+
+export const deleteTicket = async (id: string) =>
+  (await api<{ data: { id: string; deleted: true; events_removed: number } }>(`/api/tickets/${enc(id)}`, { method: "DELETE" })).data;
+
+export const listPeople = async (kind: PersonKind) =>
+  items(await api<ItemsResponse<PersonRecord>>(`/api/${kind}`));
+
+export const createPerson = async (kind: PersonKind, body: Record<string, unknown>) =>
+  (await api<{ data: PersonRecord }>(`/api/${kind}`, { method: "POST", body })).data;
+
+export const updatePerson = async (kind: PersonKind, key: string, patch: Record<string, unknown>) =>
+  (await api<{ data: PersonRecord }>(`/api/${kind}/${enc(key)}`, { method: "PATCH", body: patch })).data;
+
+export const deletePerson = async (kind: PersonKind, key: string) =>
+  (await api<{ data: { key: string; deleted: true } }>(`/api/${kind}/${enc(key)}`, { method: "DELETE" })).data;
 
 /** POST /api/events adds a comment; `public: false` makes it an internal note. */
 export const addComment = async (input: {

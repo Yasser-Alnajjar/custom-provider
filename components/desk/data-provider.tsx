@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { ApiError, getEvents, listAllTickets, onApiEvent } from "@/lib/client/api";
+import { ApiError, getEvents, listAllTickets, listPeople, onApiEvent } from "@/lib/client/api";
 import { useToken } from "@/lib/client/storage";
 import { buildDirectory, type Directory } from "@/lib/directory";
 import { time } from "@/lib/format";
-import type { Ticket, TicketEvent } from "@/lib/types";
+import type { PeopleRegistry, Person, Ticket, TicketEvent } from "@/lib/types";
 
 type LoadState = "loading" | "ready" | "error";
 
@@ -40,6 +40,7 @@ export function DeskDataProvider({ children }: { children: React.ReactNode }) {
   const token = useToken();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [events, setEvents] = useState<TicketEvent[]>([]);
+  const [registry, setRegistry] = useState<Partial<PeopleRegistry>>({});
   const [ticketsState, setTicketsState] = useState<LoadState>("loading");
   const [eventsState, setEventsState] = useState<LoadState>("loading");
   const [ticketsError, setTicketsError] = useState("");
@@ -84,6 +85,15 @@ export function DeskDataProvider({ children }: { children: React.ReactNode }) {
           setEventsError(message(e));
         },
       ),
+      // People without tickets only exist in these lists; a failure just hides them.
+      Promise.all((["customers", "requesters", "agents"] as const).map(listPeople)).then(
+        ([customers, requesters, agents]) => {
+          const person = (r: (typeof customers)[number]): Person => ({ id: r.id, name: r.name, email: r.email });
+
+          setRegistry({ customers: customers.map(person), requesters: requesters.map(person), agents: agents.map(person) });
+        },
+        () => {},
+      ),
     ]).then(() => {
       inflight.current = null;
     });
@@ -97,7 +107,7 @@ export function DeskDataProvider({ children }: { children: React.ReactNode }) {
     void reload();
   }, [reload, token]);
 
-  const directory = useMemo(() => buildDirectory(tickets, events), [tickets, events]);
+  const directory = useMemo(() => buildDirectory(tickets, events, registry), [tickets, events, registry]);
   const index = useMemo(() => new Map(tickets.map((t) => [t.id, t])), [tickets]);
 
   const value = useMemo<DeskData>(

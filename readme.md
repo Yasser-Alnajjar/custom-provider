@@ -21,6 +21,10 @@ Open http://localhost:4100 for the lab UI. Set `PORT` and `API_TOKEN` to change 
 
 Other scripts: `npm run lint`, `npm run typecheck`, `npm test`.
 
+## Ticket lifecycle
+
+Tickets support create (`POST /api/tickets`), read (`GET /api/tickets`, `GET /api/tickets/:id`), update (`PATCH /api/tickets/:id`) and delete (`DELETE /api/tickets/:id`, which also removes that ticket's events; ids are never reused). Comments, internal notes and status history are append-only on purpose: they are the audit trail Elapsed uses for first-response and resolution timings, so they cannot be edited or deleted on their own. Customers, requesters and agents have their own CRUD endpoints (`/api/customers`, `/api/requesters`, `/api/agents`, with `GET`/`POST` on the collection and `GET`/`PATCH`/`DELETE` on `/:key`, where the key is the customer id or name, the requester email, or the agent id). They are the union of people that tickets mention and people created directly (stored under `people` in the database, optional for older files). Renaming a person rewrites the embedded copies on tickets (bumping `updated_at` so Elapsed's sync sees it) and the author name on their events. A person that tickets or event history refer to cannot be deleted (`409 conflict`); `id` cannot be changed; duplicate keys are rejected with `409`. Elapsed syncs with `updated_since`, which cannot report deletions, so a deleted ticket simply stops appearing.
+
 ## Architecture
 
 The app is a single Next.js (App Router) project. There is no separate server.

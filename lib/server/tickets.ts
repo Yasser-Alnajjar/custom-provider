@@ -252,6 +252,20 @@ export function patchTicket(state: DbState, id: string, patch: Body): Ticket {
   return ticket;
 }
 
+/**
+ * Removes a ticket together with its events (comments, notes, status history),
+ * which cannot exist without it. Events of other tickets are untouched.
+ */
+export function deleteTicket(state: DbState, id: string) {
+  requireTicket(state, id);
+
+  const before = state.events.length;
+
+  state.tickets = state.tickets.filter((t) => t.id !== id);
+  state.events = state.events.filter((e) => e.ticket_id !== id);
+  return { id, deleted: true as const, events_removed: before - state.events.length };
+}
+
 export function addComment(state: DbState, body: Body): TicketEvent {
   const ticket = typeof body.ticket_id === "string" ? findTicket(state, body.ticket_id) : undefined;
 

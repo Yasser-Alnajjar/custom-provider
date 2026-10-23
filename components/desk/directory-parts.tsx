@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQueryState } from "@/lib/client/use-query-state";
 import { compare, plural, time } from "@/lib/format";
-import type { Ticket, TicketEvent } from "@/lib/types";
+import type { PersonKind, Ticket, TicketEvent } from "@/lib/types";
 import { Avatar } from "./badges";
 import { useDesk } from "./data-provider";
 import { EventItem } from "./event-item";
 import { PageHeader } from "./page-header";
 import { Pager } from "./pager";
 import { Empty, ErrorState, Panel } from "./panel";
+import { CreatePersonButton } from "./person-dialogs";
 import { nextSort, SortHeader } from "./sort-header";
 
 export function PersonCell({ name, sub }: { name: string; sub?: string | null }) {
@@ -52,6 +53,7 @@ export interface Column<T> {
 }
 
 interface ListConfig<T> {
+  kind: PersonKind;
   title: string;
   noun: string;
   subtitle: React.ReactNode;
@@ -128,7 +130,12 @@ export function DirectoryList<T>(cfg: ListConfig<T>) {
       <PageHeader
         title={cfg.title}
         subtitle={cfg.subtitle}
-        actions={<Button variant="outline" onClick={() => desk.reload().then(() => toast("Data refreshed"))}>↻ Refresh data</Button>}
+        actions={
+          <>
+            <Button variant="outline" onClick={() => desk.reload().then(() => toast("Data refreshed"))}>↻ Refresh data</Button>
+            <CreatePersonButton kind={cfg.kind} />
+          </>
+        }
       />
       <Panel>
         <div className="flex items-center gap-2 p-3.5">

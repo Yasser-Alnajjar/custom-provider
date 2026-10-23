@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { CopyButton } from "../copy-button";
 import { useDesk } from "../data-provider";
 import { PageHeader } from "../page-header";
 import { Empty, Panel } from "../panel";
-import { EditTicketDialog } from "../ticket-dialogs";
+import { DeleteTicketDialog, EditTicketDialog } from "../ticket-dialogs";
 import { Activity } from "../ticket/activity";
 import { Composer } from "../ticket/composer";
 import { Conversation } from "../ticket/conversation";
@@ -21,7 +22,9 @@ import { useTicket } from "../ticket/use-ticket";
 export function TicketView({ id }: { id: string }) {
   const desk = useDesk();
   const { ticket, comments, history, events, errors, fatal, loading, load } = useTicket(id);
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const crumbs = [{ label: "Tickets", href: "/tickets" }];
 
   // After a mutation: refetch this ticket's data and refresh the shared lists in the background.
@@ -58,6 +61,7 @@ export function TicketView({ id }: { id: string }) {
           <>
             <Button variant="outline" onClick={() => load().then((r) => r.ok ? toast("Ticket refreshed") : toast.error(r.error))}>↻ Refresh</Button>
             <Button onClick={() => setEditing(true)}>✎ Edit ticket</Button>
+            <Button variant="destructive" onClick={() => setDeleting(true)}>Delete</Button>
           </>
         }
       />
@@ -94,6 +98,7 @@ export function TicketView({ id }: { id: string }) {
         </aside>
       </div>
       {editing && <EditTicketDialog ticket={ticket} open onOpenChange={setEditing} onSaved={() => load()} />}
+      {deleting && <DeleteTicketDialog ticket={ticket} open onOpenChange={setDeleting} onDeleted={() => router.push("/tickets")} />}
     </>
   );
 }
