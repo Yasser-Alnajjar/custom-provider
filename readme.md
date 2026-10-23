@@ -1,25 +1,42 @@
 # Custom Ticket Provider Lab
 
-A tiny, dependency-free mock ticketing provider for testing Elapsed's Custom Ticket Provider integration. It is **not** a production ticketing system and does not modify the Elapsed repository.
+A small mock ticketing provider for testing Elapsed's Custom Ticket Provider integration. It is **not** a production ticketing system and does not modify the Elapsed repository.
 
 It stores tickets with their history: customer and agent comments, internal notes, status transitions with timestamps, closure times, tags and channels. It starts with no tickets; create them from the UI or the API. Data is saved in a JSON file database, `data/db.json` (set `DB_FILE` to change it), or in Redis when it is configured (see [Deploy to Vercel](#deploy-to-vercel)). If the database does not exist it is created empty; delete it and restart to reset.
 
 ## Requirements
 
-- Node.js 18+
-- No npm install required
+- Node.js 20.9+ (Next.js 16)
+- `npm install`
 
 ## Run locally
 
 ```bash
-node server.js
+npm install
+npm run dev          # development, http://localhost:4100
+npm run build && npm start   # production build
 ```
 
 Open http://localhost:4100 for the lab UI. Set `PORT` and `API_TOKEN` to change the port (default `4100`) or the bearer token (default `demo_elapsed`).
 
+Other scripts: `npm run lint`, `npm run typecheck`, `npm test`.
+
+## Architecture
+
+The app is a single Next.js (App Router) project. There is no separate server.
+
+| Path | Role |
+| --- | --- |
+| `app/api/**`, `app/health`, `app/elapsed-config.json` | Route Handlers: the REST API Elapsed consumes (same routes, status codes, messages and CORS as before) |
+| `lib/server/` | Server only: `db.ts` (Redis or JSON file, revision-checked saves), `tickets.ts` (business rules and validation), `http.ts` (auth, JSON, errors), `elapsed-config.ts` |
+| `lib/` | Shared pure logic: types, formatting, the derived customers / requesters / agents directory, filters, payload builders (unit-tested) |
+| `app/**/page.tsx` | Server Components: routing and metadata. They render the client views |
+| `components/desk/` | The lab UI. Views are Client Components because the API token lives in the browser and the UI calls the same public API as Elapsed |
+| `components/ui/` | shadcn/ui primitives (Tailwind CSS v4) |
+
 ## Deploy to Vercel
 
-Import the repo in Vercel (framework preset **Other**, no build settings needed) or run `npx vercel`. `public/` is served as static files and `api/index.js` runs `server.js` as a serverless function; `vercel.json` routes `/api/*`, `/health` and `/elapsed-config.json` to it and falls back to the app shell for UI routes. Set `API_TOKEN` in the project's environment variables to change the token.
+Import the repo in Vercel. The framework is detected as Next.js and no `vercel.json` is needed. Set `API_TOKEN` in the project's environment variables to change the token. (The old `vercel.json` rewrites and `api/index.js` entry are gone: Next.js routes everything itself.)
 
 Vercel serves the app over HTTPS on a public host, so Elapsed can use `https://<your-app>.vercel.app/elapsed-config.json` without `CUSTOM_PROVIDER_ALLOW_PRIVATE_HOSTS`.
 
@@ -34,18 +51,26 @@ Without Redis the server falls back to `/tmp/db.json`, which is per instance and
 
 ## Deploy for reliable storage (VPS)
 
-For data that persists, run the server as one long-lived Node.js process on a machine with a writable disk, such as a VPS:
+For data that persists, run the app as one long-lived Node.js process on a machine with a writable disk, such as a VPS:
 
 ```bash
 git clone <repo> && cd custom-provider
-API_TOKEN=<your-token> PORT=4100 node server.js
+npm ci && npm run build
+API_TOKEN=<your-token> PORT=4100 npm start
 ```
 
-Keep it running with a process manager (for example systemd or `pm2 start server.js`), and put it behind a reverse proxy with HTTPS (for example Caddy or nginx) so Elapsed can reach it. Data is kept in `data/db.json` next to `server.js`. Back up that file, or set `DB_FILE` to a path on a persistent volume. Run a single process only: two processes writing the same file would overwrite each other's changes.
+Keep it running with a process manager (for example systemd or `pm2 start npm --name acmedesk -- start`), and put it behind a reverse proxy with HTTPS (for example Caddy or nginx) so Elapsed can reach it. Data is kept in `data/db.json` under the working directory. Back up that file, or set `DB_FILE` to a path on a persistent volume. Run a single process only: two processes writing the same file would overwrite each other's changes.
+
+## Migrating from the previous version
+
+The previous version was a dependency-free Node server plus a vanilla-JS UI. What changed:
+
+- **Unchanged:** every API route, request/response shape, status code, error message, the bearer / `X-Api-Key` auth, CORS headers, `/health`, `/elapsed-config.json`, the `data/db.json` file format, the Redis keys and revision logic, and the environment variables (`PORT`, `API_TOKEN`, `DB_FILE`, `REDIS_KEY`, `UPSTASH_REDIS_REST_*`, `KV_REST_API_*`). Existing databases are read as they are.
+- **Changed:** you now need `npm install` and a build (`npm run build`) before `npm start`; `node server.js` no longer exists. Node 20.9+ is required. `vercel.json` and `api/index.js` were removed. The UI is rebuilt in React with the same routes and features; it keeps the token and acting-as identity in `localStorage` under the same keys.
 
 ## The lab UI
 
-The UI is a small client-side app (vanilla ES modules, no framework) served by the same server, so it always talks to the same origin and port. Routes survive a refresh; filters, sort and page live in the query string.
+The UI is a React app (Next.js App Router) served by the same server, so it always talks to the same origin and port. Routes survive a refresh; filters, sort and page live in the query string.
 
 | Route | What it shows |
 | --- | --- |
@@ -64,14 +89,7 @@ The API token the UI sends is kept in the browser (`localStorage`); change it on
 
 ### Styling
 
-Styles are built with Tailwind CSS v4. The server and UI have no runtime dependencies; Tailwind is only needed to regenerate `public/styles.css` from `src/styles.css` after you change styles or add classes:
-
-```bash
-npm install          # first time only (dev dependencies)
-npm run build:css    # or: npm run watch:css
-```
-
-`public/styles.css` is committed, so running the lab still needs only Node.
+Tailwind CSS v4 with shadcn/ui primitives (`components/ui`). Theme tokens live in `app/globals.css`; the UI is dark only.
 
 ## Use it in Elapsed
 
@@ -120,4 +138,3 @@ The server only exposes what is listed above. There are no endpoints or fields f
 - Only status changes and comments are recorded as events. Changing priority, assignee, tags or other fields is saved but does not appear in the history.
 - The server has no authenticated user, so a status change is attributed to the ticket's assignee (or System) rather than to whoever made it.
 - `GET /api/tickets` returns tickets sorted by ID; the UI loads every page and sorts/filters client-side. `/comments`, `/history` and `/api/events` are not paginated.
-- Static routes without a file extension (`/tickets/TCK-1001`) fall back to the app shell so refresh and deep links work.

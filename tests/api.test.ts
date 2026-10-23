@@ -1,0 +1,254 @@
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+// The routes read their configuration at import time, so point them at a temp
+// database file and a known token before importing.
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), "acmedesk-"));
+const DB_FILE = path.join(dir, "db.json");
+const AUTH = { Authorization: "Bearer test_token" };
+
+type RouteModule = Record<string, (req: Request, ctx: { params: Promise<Record<string, string>> }) => Promise<Response>>;
+let routes: Record<string, RouteModule>;
+
+const url = (p: string) => `http://127.0.0.1:4100${p}`;
+const params = (p: Record<string, string> = {}) => ({ params: Promise.resolve(p) });
+
+function call(route: string, method: string, p: string, body?: unknown, headers: Record<string, string> = AUTH, ctx: Record<string, string> = {}) {
+  const req = new Request(url(p), {
+    method,
+    headers: { ...headers, ...(body !== undefined ? { "Content-Type": "application/json" } : {}) },
+    body: body === undefined ? undefined : typeof body === "string" ? body : JSON.stringify(body),
+  });
+
+  return routes[route][method](req, params(ctx));
+}
+
+const newTicket = (over: Record<string, unknown> = {}) => ({
+  title: "Printer on fire",
+  description: "It is smoking",
+  status: "open",
+  priority: "high",
+  requester: { id: "usr-1", name: "Mona", email: "mona@example.com" },
+  customer: { id: "cus-1", name: "Acme" },
+  tags: ["hw"],
+  channel: "email",
+  ...over,
+});
+
+beforeAll(async () => {
+  vi.stubEnv("DB_FILE", DB_FILE);
+  vi.stubEnv("API_TOKEN", "test_token");
+  vi.stubEnv("UPSTASH_REDIS_REST_URL", "");
+  vi.stubEnv("KV_REST_API_URL", "");
+  routes = {
+    tickets: await import("@/app/api/tickets/route"),
+    ticket: await import("@/app/api/tickets/[id]/route"),
+    comments: await import("@/app/api/tickets/[id]/comments/route"),
+    history: await import("@/app/api/tickets/[id]/history/route"),
+    events: await import("@/app/api/events/route"),
+    meta: await import("@/app/api/meta/route"),
+    reset: await import("@/app/api/reset/route"),
+    unknown: await import("@/app/api/[...path]/route"),
+    health: await import("@/app/health/route"),
+    config: await import("@/app/elapsed-config.json/route"),
+  } as unknown as Record<string, RouteModule>;
+});
+
+beforeEach(() => fs.rmSync(DB_FILE, { force: true }));
+afterAll(() => fs.rmSync(dir, { recursive: true, force: true }));
+
+describe("auth and CORS", () => {
+  it("rejects requests without the token", async () => {
+    const res = await call("meta", "GET", "/api/meta", undefined, {});
+
+    expect(res.status).toBe(401);
+    expect(await res.json()).toEqual({ error: "unauthorized", message: "Use Authorization: Bearer <API_TOKEN>." });
+  });
+
+  it("accepts the bearer token and X-Api-Key", async () => {
+    expect((await call("meta", "GET", "/api/meta")).status).toBe(200);
+    expect((await call("meta", "GET", "/api/meta", undefined, { "X-Api-Key": "test_token" })).status).toBe(200);
+  });
+
+  it("answers preflight requests and sets CORS headers", async () => {
+    const res = routes.meta.OPTIONS(new Request(url("/api/meta"), { method: "OPTIONS" }), params());
+
+    expect((await res).status).toBe(204);
+    expect((await res).headers.get("access-control-allow-origin")).toBe("*");
+    expect((await call("meta", "GET", "/api/meta")).headers.get("access-control-allow-methods")).toContain("PATCH");
+  });
+
+  it("returns 404 JSON for unknown API paths, after auth", async () => {
+    expect((await call("unknown", "GET", "/api/nope", undefined, {})).status).toBe(401);
+    const res = await call("unknown", "GET", "/api/nope");
+
+    expect(res.status).toBe(404);
+    expect(await res.json()).toEqual({ error: "not_found", message: "Unknown API endpoint" });
+  });
+
+  it("keeps /api/reset disabled", async () => {
+    expect((await call("reset", "POST", "/api/reset")).status).toBe(403);
+  });
+});
+
+describe("tickets", () => {
+  it("starts empty and creates tickets from TCK-1001", async () => {
+    const empty = await (await call("tickets", "GET", "/api/tickets")).json();
+
+    expect(empty.data.items).toEqual([]);
+
+    const res = await call("tickets", "POST", "/api/tickets", newTicket());
+    const { data } = await res.json();
+
+    expect(res.status).toBe(201);
+    expect(data.id).toBe("TCK-1001");
+    expect(data.status).toBe("open");
+
+    const second = (await (await call("tickets", "POST", "/api/tickets", newTicket())).json()).data;
+
+    expect(second.id).toBe("TCK-1002");
+  });
+
+  it("records created, opening comment and status events", async () => {
+    await call("tickets", "POST", "/api/tickets", newTicket());
+
+    const events = (await (await call("events", "GET", "/api/events?ticket_id=TCK-1001")).json()).data;
+
+    expect(events.items.map((e: { type: string }) => e.type)).toEqual(["created", "comment", "status_changed"]);
+    expect(events.items[2]).toMatchObject({ from: "new", to: "open", public: false, author: { role: "system" } });
+  });
+
+  it("validates input with the documented messages", async () => {
+    const missing = await call("tickets", "POST", "/api/tickets", { title: "x" });
+
+    expect(missing.status).toBe(400);
+    expect(await missing.json()).toEqual({ error: "validation_error", message: "title, requester.email, status, and priority are required" });
+
+    const status = await call("tickets", "POST", "/api/tickets", newTicket({ status: "bogus" }));
+
+    expect((await status.json()).message).toBe("status must be one of new, open, pending, in_progress, solved, closed");
+    expect((await (await call("tickets", "POST", "/api/tickets", newTicket({ priority: "x" }))).json()).message).toBe("priority must be one of low, normal, high, urgent");
+    expect((await (await call("tickets", "POST", "/api/tickets", newTicket({ tags: "a" }))).json()).message).toBe("tags must be an array");
+  });
+
+  it("rejects malformed JSON with bad_request", async () => {
+    const res = await call("tickets", "POST", "/api/tickets", "{nope");
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "bad_request", message: "Invalid JSON" });
+  });
+
+  it("paginates, filters and searches", async () => {
+    for (let i = 0; i < 5; i++) await call("tickets", "POST", "/api/tickets", newTicket({ title: `T${i}`, status: i < 2 ? "solved" : "open" }));
+
+    const page = (await (await call("tickets", "GET", "/api/tickets?page=2&limit=2")).json()).data;
+
+    expect(page.items.map((t: { id: string }) => t.id)).toEqual(["TCK-1003", "TCK-1004"]);
+    expect(page.pagination).toEqual({ page: 2, limit: 2, total: 5, total_pages: 3, next_page: 3 });
+    expect((await (await call("tickets", "GET", "/api/tickets?status=solved")).json()).data.pagination.total).toBe(2);
+    expect((await (await call("tickets", "GET", "/api/tickets?q=t3")).json()).data.items).toHaveLength(1);
+    expect((await call("tickets", "GET", "/api/tickets?updated_since=nope")).status).toBe(400);
+    expect((await (await call("tickets", "GET", "/api/tickets?updated_since=2999-01-01T00:00:00Z")).json()).data.items).toEqual([]);
+  });
+
+  it("returns 404 for a missing ticket", async () => {
+    const res = await call("ticket", "GET", "/api/tickets/TCK-9", undefined, AUTH, { id: "TCK-9" });
+
+    expect(res.status).toBe(404);
+    expect(await res.json()).toEqual({ error: "not_found", message: "Ticket not found" });
+    expect((await call("comments", "GET", "/api/tickets/TCK-9/comments", undefined, AUTH, { id: "TCK-9" })).status).toBe(404);
+  });
+
+  it("PATCH sets resolved_at, records history, and clears it on reopen", async () => {
+    await call("tickets", "POST", "/api/tickets", newTicket());
+
+    const solved = (await (await call("ticket", "PATCH", "/api/tickets/TCK-1001", { status: "solved" }, AUTH, { id: "TCK-1001" })).json()).data;
+
+    expect(solved.status).toBe("solved");
+    expect(solved.resolved_at).toBeTruthy();
+
+    const closed = (await (await call("ticket", "PATCH", "/api/tickets/TCK-1001", { status: "closed" }, AUTH, { id: "TCK-1001" })).json()).data;
+
+    expect(closed.resolved_at).toBe(solved.resolved_at);
+
+    const reopened = (await (await call("ticket", "PATCH", "/api/tickets/TCK-1001", { status: "open" }, AUTH, { id: "TCK-1001" })).json()).data;
+
+    expect(reopened.resolved_at).toBeNull();
+
+    const history = (await (await call("history", "GET", "/api/tickets/TCK-1001/history", undefined, AUTH, { id: "TCK-1001" })).json()).data;
+
+    expect(history.items.map((h: { from: string; to: string }) => `${h.from}>${h.to}`)).toEqual(["new>open", "open>solved", "solved>closed", "closed>open"]);
+  });
+
+  it("PATCH validates and applies field changes", async () => {
+    await call("tickets", "POST", "/api/tickets", newTicket());
+
+    const patch = (body: unknown) => call("ticket", "PATCH", "/api/tickets/TCK-1001", body, AUTH, { id: "TCK-1001" });
+
+    expect((await (await patch({ title: "  " })).json()).message).toBe("title cannot be empty");
+    expect((await (await patch({ tags: [1] })).json()).message).toBe("tags must be an array of strings");
+    expect((await patch({ status: "nope" })).status).toBe(400);
+
+    const ok = (await (await patch({ title: "New", priority: "low", assignee: { id: "a1", name: "Omar" } })).json()).data;
+
+    expect(ok).toMatchObject({ title: "New", priority: "low", assignee: { id: "a1", name: "Omar" } });
+  });
+});
+
+describe("comments", () => {
+  beforeEach(async () => {
+    await call("tickets", "POST", "/api/tickets", newTicket());
+  });
+
+  it("adds public comments and internal notes", async () => {
+    const note = await call("events", "POST", "/api/events", { ticket_id: "TCK-1001", body: "Secret", public: false, author: { name: "Omar", role: "agent" } });
+
+    expect(note.status).toBe(201);
+    expect((await note.json()).data).toMatchObject({ type: "comment", public: false, author: { name: "Omar", role: "agent" } });
+
+    const comments = (await (await call("comments", "GET", "/api/tickets/TCK-1001/comments", undefined, AUTH, { id: "TCK-1001" })).json()).data;
+
+    expect(comments.items).toHaveLength(2); // opening comment + note
+    expect(comments.total).toBe(2);
+  });
+
+  it("validates comments", async () => {
+    const post = async (body: unknown) => (await (await call("events", "POST", "/api/events", body)).json()).message;
+
+    expect(await post({ ticket_id: "nope", body: "x" })).toBe("ticket_id must reference an existing ticket");
+    expect(await post({ ticket_id: "TCK-1001", body: "  " })).toBe("body is required");
+    expect(await post({ ticket_id: "TCK-1001", body: "x", author: { role: "boss" } })).toBe("author.role must be one of customer, agent, system");
+    expect(await post({ ticket_id: "TCK-1001", body: "x", type: "status_changed" })).toContain("only comments can be added");
+  });
+});
+
+describe("health and Elapsed config", () => {
+  it("serves /health without auth", async () => {
+    const res = routes.health.GET(new Request(url("/health")), params());
+
+    expect(await (await res).json()).toEqual({ ok: true, provider: "Acme Desk (Demo)", version: "1.1.0" });
+  });
+
+  it("derives the base URL from forwarded headers and prefers 127.0.0.1", async () => {
+    const forwarded = await routes.config.GET(new Request(url("/elapsed-config.json"), { headers: { "x-forwarded-proto": "https", "x-forwarded-host": "app.vercel.app" } }), params());
+    const local = await routes.config.GET(new Request("http://localhost:4100/elapsed-config.json", { headers: { host: "localhost:4100" } }), params());
+
+    expect((await forwarded.json()).connection.baseUrl).toBe("https://app.vercel.app");
+
+    const cfg = await local.json();
+
+    expect(cfg.connection.baseUrl).toBe("http://127.0.0.1:4100");
+    expect(cfg.valueMaps.status.pending).toBe("pending_customer");
+    expect(cfg.tickets.request.path).toBe("/api/tickets");
+  });
+});
+
+describe("PATCH ordering", () => {
+  it("reports a missing ticket before a malformed body", async () => {
+    const res = await call("ticket", "PATCH", "/api/tickets/TCK-9", "{bad", AUTH, { id: "TCK-9" });
+
+    expect(res.status).toBe(404);
+  });
+});

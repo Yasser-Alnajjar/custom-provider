@@ -1,0 +1,116 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+
+  --text-nano: 9px;
+  --text-micro: 10px;
+  --text-small: 11px;
+  --text-body: 12px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-deep: var(--deep);
+  --color-hover: var(--hover);
+  --color-line-row: var(--line-row);
+  --color-link: var(--link);
+  --color-brand: var(--brand);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-bad: var(--bad);
+  --color-bad-bg: var(--bad-bg);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+/* The lab UI is dark only. */
+:root {
+  --radius: 0.625rem;
+  --background: #0b1020;
+  --foreground: #e5eaf3;
+  --card: #101827;
+  --card-foreground: #e5eaf3;
+  --popover: #101827;
+  --popover-foreground: #e5eaf3;
+  --primary: #1594d4;
+  --primary-foreground: #ffffff;
+  --secondary: #162338;
+  --secondary-foreground: #b9c5d8;
+  --muted: #0d1422;
+  --muted-foreground: #8794aa;
+  --accent: #121d2e;
+  --accent-foreground: #e5eaf3;
+  --destructive: #f0a0aa;
+  --border: #222e42;
+  --input: #2a374c;
+  --ring: #1594d4;
+  --sidebar: #080d19;
+  --deep: #0d1422;
+  --hover: #121d2e;
+  --line-row: #1c2637;
+  --link: #69c8fa;
+  --brand: #1e8bcb;
+  --ok: #67d4a7;
+  --ok-bg: #16332c;
+  --warn: #efc16c;
+  --warn-bg: #352c1d;
+  --bad: #f0a0aa;
+  --bad-bg: #2b1219;
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    font-size: 16px;
+  }
+  body {
+    @apply min-h-screen bg-background text-[13px] text-foreground;
+  }
+  button {
+    @apply cursor-pointer;
+  }
+  code {
+    @apply font-mono text-micro text-[#b9d9f8];
+  }
+}
+
+@layer components {
+  .link {
+    @apply text-link hover:underline;
+  }
+  .th {
+    @apply border-y border-line-row bg-deep px-4 py-3 text-left text-nano font-bold tracking-[0.65px] text-[#6e7e96];
+  }
+  .td {
+    @apply border-b border-line-row px-4 py-[13px] text-small text-[#9eacc1];
+  }
+}
