@@ -52,11 +52,31 @@ export interface TicketEvent {
 }
 
 /** The persisted database document (same shape in Redis and in the JSON file). */
+export type PersonKind = "customers" | "requesters" | "agents";
+
+/** People created directly through the API; tickets can also introduce people implicitly. */
+export type PeopleRegistry = Record<PersonKind, Person[]>;
+
+export interface PersonRecord {
+  key: string;
+  id: string | null;
+  name: string;
+  email: string | null;
+  /** Tickets that reference this person (as customer, requester or assignee). */
+  tickets: number;
+  /** Events this person authored (agents) or wrote as the requester. */
+  events: number;
+  /** True when the person was created directly rather than introduced by a ticket. */
+  registered: boolean;
+}
+
 export interface DbState {
   evtSeq: number;
   nextNum: number;
   tickets: Ticket[];
   events: TicketEvent[];
+  /** Optional so databases written before people had endpoints still load. */
+  people?: PeopleRegistry;
 }
 
 export interface Pagination {

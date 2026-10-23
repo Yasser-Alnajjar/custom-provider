@@ -22,7 +22,7 @@ import { CHANNELS, PRIORITIES, STATUSES, type Ticket } from "@/lib/types";
 import { useDesk } from "./data-provider";
 import { NativeSelect } from "./native-select";
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+export function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="grid gap-1.5">
       <Label>{label}</Label>
@@ -47,7 +47,7 @@ function useChannels(current?: string | null) {
 }
 
 /** Runs the submit handler, keeping the dialog open (and the input intact) on failure. */
-function useSubmit(action: () => Promise<void>) {
+export function useSubmit(action: () => Promise<void>) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 

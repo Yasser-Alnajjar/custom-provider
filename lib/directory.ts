@@ -1,8 +1,9 @@
 import { time } from "./format";
-import type { Person, Ticket, TicketEvent } from "./types";
+import type { PeopleRegistry, Person, PersonKind, Ticket, TicketEvent } from "./types";
 
-// The API has no customer, requester or agent endpoints, so those directories
-// are derived from what tickets and events carry.
+// Customers, requesters and agents are derived from what tickets and events
+// carry, plus any people registered directly through the API (which may not
+// have tickets yet).
 
 export interface Customer {
   key: string;
@@ -39,7 +40,19 @@ export const customerKey = (c: Person | null | undefined) => c?.id || c?.name ||
 export const requesterKey = (r: Person | null | undefined) =>
   String(r?.email || r?.id || r?.name || "").toLowerCase();
 
-export function buildDirectory(tickets: Ticket[], events: TicketEvent[]): Directory {
+export const agentKey = (a: Person | null | undefined) => a?.id || "";
+
+export const personKey: Record<PersonKind, (p: Person | null | undefined) => string> = {
+  customers: customerKey,
+  requesters: requesterKey,
+  agents: agentKey,
+};
+
+export function buildDirectory(
+  tickets: Ticket[],
+  events: TicketEvent[],
+  registry: Partial<PeopleRegistry> = {},
+): Directory {
   const customers = new Map<string, Customer>();
   const requesters = new Map<string, Requester>();
   const agents = new Map<string, Agent>();
@@ -99,6 +112,26 @@ export function buildDirectory(tickets: Ticket[], events: TicketEvent[]): Direct
     if (e.author?.role === "customer" && ticket) {
       requesters.get(requesterKey(ticket.requester))?.events.push(e);
     }
+  }
+
+  for (const c of registry.customers ?? []) {
+    const key = customerKey(c);
+
+    if (key && !customers.has(key)) {
+      customers.set(key, { key, id: c.id, name: c.name || key, tickets: [], requesters: new Map() });
+    }
+  }
+
+  for (const r of registry.requesters ?? []) {
+    const key = requesterKey(r);
+
+    if (key && !requesters.has(key)) {
+      requesters.set(key, { key, id: r.id, name: r.name || r.email || key, email: r.email, customers: new Map(), tickets: [], events: [] });
+    }
+  }
+
+  for (const a of registry.agents ?? []) {
+    if (a.id && !agents.has(a.id)) agents.set(a.id, { id: a.id, name: a.name || a.id, tickets: [], events: [] });
   }
 
   return { customers, requesters, agents };

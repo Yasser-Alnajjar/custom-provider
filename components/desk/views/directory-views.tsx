@@ -8,6 +8,7 @@ import { agentStats, ticketStats } from "@/lib/stats";
 import { Muted } from "../badges";
 import { useDesk } from "../data-provider";
 import { DetailPage, DirectoryList, PersonCell, RecentEvents, recentFirst } from "../directory-parts";
+import { PersonActions } from "../person-dialogs";
 import { PageHeader } from "../page-header";
 import { Empty, Panel, StatGrid } from "../panel";
 import { CompactTickets } from "../tickets-table";
@@ -21,12 +22,13 @@ export function CustomersView() {
 
   return (
     <DirectoryList
+      kind="customers"
       title="Customers"
       noun="customer"
-      subtitle={<>Organisations that raised tickets. Derived from the <code>customer</code> object on each ticket.</>}
+      subtitle={<>Organisations that raised tickets, plus any you create here.</>}
       placeholder="Search customers or requesters…"
       sort="name:asc"
-      empty="No customers yet — they appear as soon as a ticket has one."
+      empty="No customers yet — create one or raise a ticket that has one."
       items={[...directory.customers.values()]}
       search={(c) => [c.name, c.id, ...[...c.requesters.values()].flatMap((r) => [r.name, r.email])]}
       href={(c) => customerHref(c)}
@@ -47,12 +49,13 @@ export function RequestersView() {
 
   return (
     <DirectoryList
+      kind="requesters"
       title="Requesters"
       noun="requester"
-      subtitle={<>People who opened tickets. Derived from the <code>requester</code> object on each ticket.</>}
+      subtitle={<>People who opened tickets, plus any you create here.</>}
       placeholder="Search name, email or customer…"
       sort="name:asc"
-      empty="No requesters yet."
+      empty="No requesters yet — create one or raise a ticket."
       items={[...directory.requesters.values()]}
       search={(r) => [r.name, r.email, r.id, ...[...r.customers.values()].map((c) => c.name)]}
       href={(r) => requesterHref(r)}
@@ -80,12 +83,13 @@ export function AgentsView() {
 
   return (
     <DirectoryList
+      kind="agents"
       title="Agents"
       noun="agent"
-      subtitle={<>Everyone who is assigned a ticket or has written as an agent. Derived from <code>assignee</code> and event authors.</>}
+      subtitle={<>Everyone who is assigned a ticket or has written as an agent, plus any you create here.</>}
       placeholder="Search agents…"
       sort="name:asc"
-      empty="No agents yet."
+      empty="No agents yet — create one or assign a ticket."
       items={[...directory.agents.values()]}
       search={(a) => [a.name, a.id]}
       href={(a) => agentHref(a)}
@@ -121,7 +125,12 @@ export function CustomerDetailView({ id }: { id: string }) {
               crumbs={crumbs}
               title={c.name}
               subtitle={c.id ? <>Customer ID <code>{c.id}</code></> : undefined}
-              actions={<Button variant="outline" render={<Link href={`/tickets?customer=${encodeURIComponent(c.key)}`} />}>View in tickets list</Button>}
+              actions={
+                <>
+                  <Button variant="outline" render={<Link href={`/tickets?customer=${encodeURIComponent(c.key)}`} />}>View in tickets list</Button>
+                  <PersonActions kind="customers" person={{ key: c.key, name: c.name, id: c.id, refs: c.tickets.length }} />
+                </>
+              }
             />
             <StatGrid items={[
               { label: "Tickets", value: s.total, note: "All time" },
@@ -166,7 +175,12 @@ export function RequesterDetailView({ id }: { id: string }) {
               crumbs={crumbs}
               title={r.name}
               subtitle={<>{r.email || "No email"}{r.id && <> · ID <code>{r.id}</code></>}</>}
-              actions={r.email ? <Button variant="outline" render={<Link href={`/tickets?q=${encodeURIComponent(r.email)}`} />}>View in tickets list</Button> : undefined}
+              actions={
+                <>
+                  {r.email && <Button variant="outline" render={<Link href={`/tickets?q=${encodeURIComponent(r.email)}`} />}>View in tickets list</Button>}
+                  <PersonActions kind="requesters" person={{ key: r.key, name: r.name, id: r.id, email: r.email, refs: r.tickets.length }} />
+                </>
+              }
             />
             <StatGrid items={[
               { label: "Tickets", value: s.total, note: "Raised by this person" },
@@ -207,7 +221,12 @@ export function AgentDetailView({ id }: { id: string }) {
               crumbs={crumbs}
               title={a.name}
               subtitle={<>Agent ID <code>{a.id}</code></>}
-              actions={<Button variant="outline" render={<Link href={`/tickets?assignee=${encodeURIComponent(a.id)}`} />}>View in tickets list</Button>}
+              actions={
+                <>
+                  <Button variant="outline" render={<Link href={`/tickets?assignee=${encodeURIComponent(a.id)}`} />}>View in tickets list</Button>
+                  <PersonActions kind="agents" person={{ key: a.id, name: a.name, id: a.id, refs: a.tickets.length + a.events.length }} />
+                </>
+              }
             />
             <StatGrid items={[
               { label: "Assigned tickets", value: s.total, note: `${s.open} open` },

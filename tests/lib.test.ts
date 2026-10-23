@@ -64,6 +64,20 @@ describe("directory", () => {
     expect([...dir.agents.keys()]).toEqual(["a1"]);
     expect(dir.agents.get("a1")?.events).toHaveLength(1);
   });
+
+  it("adds registered people without tickets and never duplicates derived ones", () => {
+    const dir = buildDirectory([ticket()], [], {
+      customers: [{ id: "c1", name: "Dup" }, { id: "c2", name: "Empty Co" }],
+      requesters: [{ name: "New", email: "New@x.io" }],
+      agents: [{ id: "a2", name: "Fresh" }],
+    });
+
+    expect([...dir.customers.keys()]).toEqual(["c1", "c2"]);
+    expect(dir.customers.get("c1")?.name).not.toBe("Dup");
+    expect(dir.customers.get("c2")?.tickets).toHaveLength(0);
+    expect(dir.requesters.has("new@x.io")).toBe(true);
+    expect(dir.agents.get("a2")?.name).toBe("Fresh");
+  });
 });
 
 describe("filters", () => {

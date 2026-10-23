@@ -12,6 +12,8 @@ export class HttpError extends Error {
 export const validationError = (message: string) => new HttpError(400, "validation_error", message);
 export const notFound = (message = "Ticket not found") => new HttpError(404, "not_found", message);
 
+export const conflict = (message: string) => new HttpError(409, "conflict", message);
+
 export class StorageError extends Error {}
 
 /** Another instance saved the database after this request loaded it. */
