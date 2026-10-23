@@ -1,6 +1,6 @@
 import { withDb } from "@/lib/server/db";
 import { api, json, parseBody, preflight, readText } from "@/lib/server/http";
-import { getTicket, patchTicket } from "@/lib/server/tickets";
+import { deleteTicket, getTicket, patchTicket } from "@/lib/server/tickets";
 
 export const dynamic = "force-dynamic";
 export const OPTIONS = preflight;
@@ -24,4 +24,10 @@ export const PATCH = api<Params>(async (req, { params }) => {
       return patchTicket(state, id, parseBody(raw));
     }),
   });
+});
+
+export const DELETE = api<Params>(async (_req, { params }) => {
+  const { id } = await params;
+
+  return json({ data: await withDb(true, (state) => deleteTicket(state, id)) });
 });

@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createTicket, patchTicket } from "@/lib/client/api";
+import { createTicket, deleteTicket, patchTicket } from "@/lib/client/api";
 import { requesterKey } from "@/lib/directory";
 import { humanize } from "@/lib/format";
 import { buildCreateBody, buildPatch } from "@/lib/ticket-payload";
@@ -260,6 +260,48 @@ export function EditTicketDialog({
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
             <Button type="submit" disabled={busy}>Save changes</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function DeleteTicketDialog({
+  ticket,
+  open,
+  onOpenChange,
+  onDeleted,
+}: {
+  ticket: Ticket;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onDeleted?: () => void;
+}) {
+  const { reload } = useDesk();
+  const { error, busy, onSubmit } = useSubmit(async () => {
+    await deleteTicket(ticket.id);
+    toast.success(`${ticket.id} deleted`);
+    onOpenChange(false);
+    void reload();
+    onDeleted?.();
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[440px]">
+        <form onSubmit={onSubmit} className="grid gap-3">
+          <DialogHeader>
+            <DialogTitle>Delete {ticket.id}?</DialogTitle>
+            <DialogDescription>
+              This permanently removes the ticket and all of its comments, notes and status history from the
+              provider API. It cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div role="alert" className="min-h-4 text-small text-bad">{error}</div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="submit" variant="destructive" disabled={busy}>Delete ticket</Button>
           </DialogFooter>
         </form>
       </DialogContent>

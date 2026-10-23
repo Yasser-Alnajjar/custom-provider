@@ -77,7 +77,7 @@ describe("auth and CORS", () => {
 
     expect((await res).status).toBe(204);
     expect((await res).headers.get("access-control-allow-origin")).toBe("*");
-    expect((await call("meta", "GET", "/api/meta")).headers.get("access-control-allow-methods")).toContain("PATCH");
+    expect((await call("meta", "GET", "/api/meta")).headers.get("access-control-allow-methods")).toContain("DELETE");
   });
 
   it("returns 404 JSON for unknown API paths, after auth", async () => {
@@ -159,6 +159,34 @@ describe("tickets", () => {
     expect(res.status).toBe(404);
     expect(await res.json()).toEqual({ error: "not_found", message: "Ticket not found" });
     expect((await call("comments", "GET", "/api/tickets/TCK-9/comments", undefined, AUTH, { id: "TCK-9" })).status).toBe(404);
+  });
+
+  it("DELETE removes the ticket and only its own events", async () => {
+    await call("tickets", "POST", "/api/tickets", newTicket());
+    await call("tickets", "POST", "/api/tickets", newTicket({ title: "Keep me" }));
+    const before = (await (await call("events", "GET", "/api/events?ticket_id=TCK-1001")).json()).data.total;
+    const other = (await (await call("events", "GET", "/api/events?ticket_id=TCK-1002")).json()).data.total;
+
+    const res = await call("ticket", "DELETE", "/api/tickets/TCK-1001", undefined, AUTH, { id: "TCK-1001" });
+
+    expect(res.status).toBe(200);
+    expect((await res.json()).data).toEqual({ id: "TCK-1001", deleted: true, events_removed: before });
+    expect((await call("ticket", "GET", "/api/tickets/TCK-1001", undefined, AUTH, { id: "TCK-1001" })).status).toBe(404);
+    expect((await (await call("events", "GET", "/api/events?ticket_id=TCK-1001")).json()).data.total).toBe(0);
+    expect((await (await call("events", "GET", "/api/events?ticket_id=TCK-1002")).json()).data.total).toBe(other);
+    expect((await (await call("tickets", "GET", "/api/tickets")).json()).data.pagination.total).toBe(1);
+  });
+
+  it("DELETE requires auth and a known ticket, and never reuses ids", async () => {
+    await call("tickets", "POST", "/api/tickets", newTicket());
+
+    expect((await call("ticket", "DELETE", "/api/tickets/TCK-1001", undefined, {}, { id: "TCK-1001" })).status).toBe(401);
+    expect((await call("ticket", "GET", "/api/tickets/TCK-1001", undefined, AUTH, { id: "TCK-1001" })).status).toBe(200);
+    expect((await call("ticket", "DELETE", "/api/tickets/TCK-9", undefined, AUTH, { id: "TCK-9" })).status).toBe(404);
+
+    await call("ticket", "DELETE", "/api/tickets/TCK-1001", undefined, AUTH, { id: "TCK-1001" });
+    expect((await call("ticket", "DELETE", "/api/tickets/TCK-1001", undefined, AUTH, { id: "TCK-1001" })).status).toBe(404);
+    expect((await (await call("tickets", "POST", "/api/tickets", newTicket())).json()).data.id).toBe("TCK-1002");
   });
 
   it("PATCH sets resolved_at, records history, and clears it on reopen", async () => {

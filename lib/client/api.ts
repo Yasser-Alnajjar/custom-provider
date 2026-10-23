@@ -102,6 +102,9 @@ export const createTicket = async (body: Record<string, unknown>) =>
 export const patchTicket = async (id: string, patch: Record<string, unknown>) =>
   (await api<{ data: Ticket }>(`/api/tickets/${enc(id)}`, { method: "PATCH", body: patch })).data;
 
+export const deleteTicket = async (id: string) =>
+  (await api<{ data: { id: string; deleted: true; events_removed: number } }>(`/api/tickets/${enc(id)}`, { method: "DELETE" })).data;
+
 /** POST /api/events adds a comment; `public: false` makes it an internal note. */
 export const addComment = async (input: {
   ticket_id: string;
