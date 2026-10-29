@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 type Scalar = string | number;
@@ -13,24 +13,38 @@ export function useQueryState<T extends Record<string, Scalar>>(defaults: T) {
   const params = useSearchParams();
   const pathname = usePathname();
 
-  const state = useMemo(() => {
-    const out: Record<string, Scalar> = {};
+  const parse = useCallback(
+    (source: URLSearchParams) => {
+      const out: Record<string, Scalar> = {};
 
-    for (const [key, fallback] of Object.entries(defaults)) {
-      const raw = params.get(key);
+      for (const [key, fallback] of Object.entries(defaults)) {
+        const raw = source.get(key);
 
-      if (raw === null) out[key] = fallback;
-      else if (typeof fallback === "number") out[key] = Number(raw) || fallback;
-      else out[key] = raw;
-    }
+        if (raw === null) out[key] = fallback;
+        else if (typeof fallback === "number") out[key] = Number(raw) || fallback;
+        else out[key] = raw;
+      }
 
-    return out as T;
+      return out as T;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params]);
+    [],
+  );
+
+  // Own copy of the state: history.replaceState does not reliably notify
+  // useSearchParams, so relying on it left filters and page size unchanged on screen.
+  const [state, setState] = useState<T>(() => parse(params));
+  const [seen, setSeen] = useState(params);
+
+  // Navigation (links, back/forward) changes the params: adopt them.
+  if (seen !== params) {
+    setSeen(params);
+    setState(parse(params));
+  }
 
   const update = useCallback(
     (patch: Partial<T>) => {
-      const next = { ...state, ...patch };
+      const next = { ...state, ...patch } as T;
       const q = new URLSearchParams();
 
       for (const [key, value] of Object.entries(next)) {
@@ -38,6 +52,8 @@ export function useQueryState<T extends Record<string, Scalar>>(defaults: T) {
       }
 
       const qs = q.toString();
+
+      setState(next);
       window.history.replaceState(window.history.state, "", pathname + (qs ? `?${qs}` : "") + window.location.hash);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
