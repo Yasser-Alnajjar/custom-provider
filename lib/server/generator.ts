@@ -150,6 +150,9 @@ export function advanceJob(state: DbState, id: string, now = Date.now()) {
       continue;
     }
 
+    // The history is back-dated, but the ticket was changed now. Elapsed lists tickets with
+    // `updated_since=<last pass>`, so a stale updated_at would hide it from every later sync.
+    plan.ticket.updated_at = new Date(now).toISOString();
     state.tickets.push(plan.ticket);
     for (const e of plan.events) {
       addEvent(state, plan.ticket.id, e.type, e.at, { author: e.author, public: e.public, body: e.body, from: e.from, to: e.to });
@@ -249,4 +252,25 @@ export async function runBatch(id: string) {
     await withDb(true, (state) => recordFailure(state, id, e instanceof Error ? e.message : String(e))).catch(() => {});
     throw e;
   }
+}
+
+/**
+ * Marks every synthetic ticket as changed now, so Elapsed's incremental sync
+ * (`updated_since`) lists them again. For tickets generated before generated
+ * tickets were stamped at write time. Real tickets and history are untouched.
+ */
+export function touchSynthetic(state: DbState, now = Date.now()) {
+  if (state_(state).jobs.some((j) => j.status === "running")) throw conflict("A job is running; cancel it first");
+
+  const stamp = new Date(now).toISOString();
+  let touched = 0;
+
+  for (const t of state.tickets) {
+    if (isSyntheticTicket(t)) {
+      t.updated_at = stamp;
+      touched++;
+    }
+  }
+
+  return { touched };
 }

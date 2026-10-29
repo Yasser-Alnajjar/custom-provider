@@ -172,7 +172,7 @@ describe("generation", () => {
 
       expect(times).toEqual([...times].sort((a, b) => a - b));
       expect(events.filter((e) => e.type === "created")).toHaveLength(1);
-      expect(Date.parse(t.updated_at)).toBe(Math.max(...times));
+      expect(Date.parse(t.updated_at)).toBeGreaterThanOrEqual(Math.max(...times)); // stamped when written
       expect(history.at(-1)?.to ?? "new").toBe(t.status);
 
       let from = "new";
@@ -200,7 +200,7 @@ describe("generation", () => {
   });
 
   it("is available through the normal ingestion endpoints (updated_since, comments, history)", async () => {
-    await runAll((await start(10)).body.data.id);
+    await runAll((await start(60)).body.data.id);
 
     const list = async (q: string) => {
       const req = new Request(`http://127.0.0.1:4100/api/tickets?${q}`, { headers: AUTH });
@@ -208,8 +208,8 @@ describe("generation", () => {
       return ((await (await r.tickets.GET(req, { params: Promise.resolve({}) })).json()) as any).data;
     };
 
-    expect((await list("limit=100")).items).toHaveLength(10);
-    expect((await list("updated_since=2000-01-01T00:00:00Z&limit=100")).items).toHaveLength(10);
+    expect((await list("limit=100")).items).toHaveLength(60);
+    expect((await list("updated_since=2000-01-01T00:00:00Z&limit=100")).items).toHaveLength(60);
     expect((await list("updated_since=2999-01-01T00:00:00Z")).items).toHaveLength(0);
 
     const sample = (await read()).tickets.find((t) => t.status === "closed")!;
