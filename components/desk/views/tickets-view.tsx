@@ -133,7 +133,7 @@ export function TicketsView() {
         </div>
         {filtered.length > 0 && <Pager total={filtered.length} page={page} size={f.size} onPage={(p) => { setF({ page: p }); window.scrollTo({ top: 0 }); }} onSize={(s) => setF({ size: s, page: 1 })} />}
         <div className="flex justify-between border-t px-[18px] py-[11px] text-micro text-[#6e7e96]">
-          <span>Data is stored in the server&apos;s database: Redis, or a JSON file.</span>
+          <span>Data is stored in a JSON file on the server (public/db.json).</span>
           <span>REST API · JSON</span>
         </div>
       </>

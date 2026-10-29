@@ -40,8 +40,6 @@ const newTicket = (over: Record<string, unknown> = {}) => ({
 beforeAll(async () => {
   vi.stubEnv("DB_FILE", DB_FILE);
   vi.stubEnv("API_TOKEN", "test_token");
-  vi.stubEnv("UPSTASH_REDIS_REST_URL", "");
-  vi.stubEnv("KV_REST_API_URL", "");
   routes = {
     tickets: await import("@/app/api/tickets/route"),
     ticket: await import("@/app/api/tickets/[id]/route"),

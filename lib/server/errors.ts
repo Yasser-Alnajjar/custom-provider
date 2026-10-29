@@ -16,5 +16,3 @@ export const conflict = (message: string) => new HttpError(409, "conflict", mess
 
 export class StorageError extends Error {}
 
-/** Another instance saved the database after this request loaded it. */
-export class ConflictError extends StorageError {}

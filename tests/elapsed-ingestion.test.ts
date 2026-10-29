@@ -87,8 +87,6 @@ const normal = (title: string) => ({
 beforeAll(async () => {
   vi.stubEnv("DB_FILE", DB_FILE);
   vi.stubEnv("API_TOKEN", "test_token");
-  vi.stubEnv("UPSTASH_REDIS_REST_URL", "");
-  vi.stubEnv("KV_REST_API_URL", "");
   vi.stubEnv("GENERATOR_MAX_TICKETS", "300");
   vi.stubEnv("GENERATOR_BATCH_SIZE", "40");
   r = {

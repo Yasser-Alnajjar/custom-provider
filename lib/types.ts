@@ -51,7 +51,7 @@ export interface TicketEvent {
   to?: string;
 }
 
-/** The persisted database document (same shape in Redis and in the JSON file). */
+/** The persisted database document (the JSON file). */
 export type PersonKind = "customers" | "requesters" | "agents";
 
 /** People created directly through the API; tickets can also introduce people implicitly. */
