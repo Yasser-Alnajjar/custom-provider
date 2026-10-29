@@ -12,3 +12,20 @@ export const REDIS_KEY = process.env.REDIS_KEY || "acmedesk:db";
 export const DB_FILE =
   process.env.DB_FILE ||
   (process.env.VERCEL ? "/tmp/db.json" : `${process.cwd()}/data/db.json`);
+
+// Synthetic data generator. Read lazily so tests (and ops) can change them.
+const intEnv = (name: string, fallback: number, min: number, max: number) => {
+  const n = Number(process.env[name]);
+
+  return Number.isInteger(n) && n >= min ? Math.min(n, max) : fallback;
+};
+
+export const generatorLimits = () => ({
+  enabled: process.env.GENERATOR_ENABLED !== "0",
+  /** Largest single request. */
+  maxTickets: intEnv("GENERATOR_MAX_TICKETS", 1000, 1, 5000),
+  /** Tickets written per batch (one bounded database save each). */
+  batchSize: intEnv("GENERATOR_BATCH_SIZE", 50, 1, 200),
+  /** Synthetic tickets allowed in the database at once, across all jobs. */
+  maxTotal: intEnv("GENERATOR_MAX_TOTAL", 5000, 1, 20000),
+});

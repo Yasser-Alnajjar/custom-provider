@@ -1,4 +1,4 @@
-import type { Pagination, PersonKind, PersonRecord, Ticket, TicketEvent } from "@/lib/types";
+import type { GenerationProgress, Pagination, PersonKind, PersonRecord, Ticket, TicketEvent } from "@/lib/types";
 import { getToken } from "./storage";
 
 // The only module that talks to the provider API. Everything it returns is the
@@ -141,3 +141,27 @@ export async function getElapsedConfig(): Promise<unknown> {
   if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status);
   return res.json();
 }
+
+export interface GeneratorOverview {
+  items: GenerationProgress[];
+  total: number;
+  limits: { enabled: boolean; maxTickets: number; batchSize: number; maxTotal: number };
+  synthetic_tickets: number;
+}
+
+export const getGenerator = async () => (await api<{ data: GeneratorOverview }>("/api/generator/jobs")).data;
+
+export const startGeneration = async (count: number, idempotency_key: string) =>
+  (await api<{ data: GenerationProgress; reused: boolean }>("/api/generator/jobs", { method: "POST", body: { count, idempotency_key } })).data;
+
+export const advanceGeneration = async (id: string) =>
+  (await api<{ data: GenerationProgress }>(`/api/generator/jobs/${enc(id)}/advance`, { method: "POST" })).data;
+
+export const cancelGeneration = async (id: string) =>
+  (await api<{ data: GenerationProgress }>(`/api/generator/jobs/${enc(id)}/cancel`, { method: "POST" })).data;
+
+export const resumeGeneration = async (id: string) =>
+  (await api<{ data: GenerationProgress }>(`/api/generator/jobs/${enc(id)}/resume`, { method: "POST" })).data;
+
+export const purgeSynthetic = async () =>
+  (await api<{ data: { deleted: number } }>("/api/generator/synthetic", { method: "DELETE" })).data;

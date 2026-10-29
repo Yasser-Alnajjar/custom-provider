@@ -38,6 +38,21 @@ The app is a single Next.js (App Router) project. There is no separate server.
 | `components/desk/` | The lab UI. Views are Client Components because the API token lives in the browser and the UI calls the same public API as Elapsed |
 | `components/ui/` | shadcn/ui primitives (Tailwind CSS v4) |
 
+## Synthetic data generator
+
+`/generator` (sidebar: Data generator) creates synthetic tickets through the normal data model, so Elapsed syncs them like any other ticket. Tickets have ids `SYN-<job>-<n>`, the tags `synthetic` and `synthetic-job-<job>`, a `[SYNTHETIC]` title prefix and `@synthetic.invalid` requesters, and carry a full history (created, customer comment, status transitions, public agent replies, internal notes) with consistent timestamps in the last 10 to 60 days.
+
+Generation runs as a persisted job (stored in the database under `generation`), written in bounded batches: `POST /api/generator/jobs {count, idempotency_key}` creates it, `POST /api/generator/jobs/:id/advance` writes one batch, `…/cancel` and `…/resume` stop and continue it, `GET /api/generator/jobs[/:id]` reports `generated`, `processed`, `failed` and `remaining`, and `DELETE /api/generator/synthetic` removes synthetic tickets only. The page drives `advance` in a loop; a reload picks a running job up again. There is no background worker in this app, so a job only progresses while a client calls `advance`.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `GENERATOR_MAX_TICKETS` | `1000` (max 5000) | Largest single request |
+| `GENERATOR_BATCH_SIZE` | `50` (max 200) | Tickets per batch / database save |
+| `GENERATOR_MAX_TOTAL` | `5000` (max 20000) | Synthetic tickets allowed at once |
+| `GENERATOR_ENABLED` | on | `0` disables the generator |
+
+The whole database is one JSON document, so keep Redis totals modest (Upstash limits request size).
+
 ## Deploy to Vercel
 
 Import the repo in Vercel. The framework is detected as Next.js and no `vercel.json` is needed. Set `API_TOKEN` in the project's environment variables to change the token. (The old `vercel.json` rewrites and `api/index.js` entry are gone: Next.js routes everything itself.)

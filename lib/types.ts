@@ -70,6 +70,39 @@ export interface PersonRecord {
   registered: boolean;
 }
 
+export type GenerationStatus = "running" | "cancelled" | "completed" | "failed";
+
+/** A synthetic-ticket generation job. Persisted in the database so it survives restarts and can be resumed. */
+export interface GenerationJob {
+  id: string;
+  /** Sequence number; part of every generated ticket id (`SYN-<seq>-<n>`). */
+  seq: number;
+  idempotency_key: string;
+  status: GenerationStatus;
+  requested: number;
+  batch_size: number;
+  /** Deterministic inputs: the same job always generates the same tickets. */
+  seed: number;
+  anchor: number;
+  /** Next ticket index (0-based) to generate; everything below it is done. */
+  cursor: number;
+  generated: number;
+  failed: number;
+  batches: number;
+  /** Failed attempts at the current batch (reset on success). */
+  attempts: number;
+  error: string | null;
+  created_at: string;
+  updated_at: string;
+  finished_at: string | null;
+}
+
+export interface GenerationProgress extends GenerationJob {
+  /** Synthetic tickets of this job actually present in the database. */
+  processed: number;
+  remaining: number;
+}
+
 export interface DbState {
   evtSeq: number;
   nextNum: number;
@@ -77,6 +110,8 @@ export interface DbState {
   events: TicketEvent[];
   /** Optional so databases written before people had endpoints still load. */
   people?: PeopleRegistry;
+  /** Synthetic data generation jobs (most recent last). */
+  generation?: { seq: number; jobs: GenerationJob[] };
 }
 
 export interface Pagination {

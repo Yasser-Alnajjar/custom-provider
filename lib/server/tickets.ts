@@ -146,27 +146,33 @@ export function listEvents(state: DbState, ticketId: string | null, type: string
 
 const isObject = (v: unknown): v is Body => typeof v === "object" && v !== null;
 
-export function createTicket(state: DbState, body: Body): Ticket {
+/** The create contract: required fields and allowed values. Shared with the data generator. */
+export function validateTicketBody(body: Body): Person {
   const requester = isObject(body.requester) ? (body.requester as Person) : undefined;
 
   if (!body.title || !requester?.email || !body.status || !body.priority) {
     throw validationError("title, requester.email, status, and priority are required");
   }
 
-  const status = body.status as string;
-  const priority = body.priority as string;
-
-  if (!(STATUSES as readonly string[]).includes(status)) {
+  if (!(STATUSES as readonly string[]).includes(body.status as string)) {
     throw validationError(`status ${oneOf(STATUSES)}`);
   }
 
-  if (!(PRIORITIES as readonly string[]).includes(priority)) {
+  if (!(PRIORITIES as readonly string[]).includes(body.priority as string)) {
     throw validationError(`priority ${oneOf(PRIORITIES)}`);
   }
 
   if (body.tags !== undefined && !Array.isArray(body.tags)) {
     throw validationError("tags must be an array");
   }
+
+  return requester;
+}
+
+export function createTicket(state: DbState, body: Body): Ticket {
+  const requester = validateTicketBody(body);
+  const status = body.status as string;
+  const priority = body.priority as string;
 
   const nowMs = Date.now();
   const now = new Date(nowMs).toISOString();

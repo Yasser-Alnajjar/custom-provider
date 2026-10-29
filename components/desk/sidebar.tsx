@@ -18,7 +18,10 @@ const NAV = [
     { href: "/requesters", icon: "☺", text: "Requesters" },
     { href: "/agents", icon: "✦", text: "Agents" },
   ] },
-  { label: "INTEGRATION", items: [{ href: "/provider", icon: "⚙", text: "Provider" }] },
+  { label: "INTEGRATION", items: [
+    { href: "/provider", icon: "⚙", text: "Provider" },
+    { href: "/generator", icon: "✚", text: "Data generator" },
+  ] },
 ];
 
 export function Sidebar() {
