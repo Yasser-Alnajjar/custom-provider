@@ -2,7 +2,7 @@
 
 A small mock ticketing provider for testing Elapsed's Custom Ticket Provider integration. It is **not** a production ticketing system and does not modify the Elapsed repository.
 
-It stores tickets with their history: customer and agent comments, internal notes, status transitions with timestamps, closure times, tags and channels. It starts with no tickets; create them from the UI or the API. Data is saved in a JSON file database, `public/db.json` (set `DB_FILE` to change it). Files in `public/` are served as static files, so the database is readable without the API token at `/db.json` while the file exists. If the database does not exist it is created empty; delete it and restart to reset.
+It stores tickets with their history: customer and agent comments, internal notes, status transitions with timestamps, closure times, tags and channels. It starts with no tickets; create them from the UI or the API. Data is saved in Supabase when it is configured (see [Deploy to Vercel](#deploy-to-vercel)), otherwise in a JSON file database, `public/db.json` (set `DB_FILE` to change it). Files in `public/` are served as static files, so the file database is readable without the API token at `/db.json` while the file exists. If the database does not exist it is created empty; delete it and restart to reset.
 
 ## Requirements
 
@@ -32,7 +32,7 @@ The app is a single Next.js (App Router) project. There is no separate server.
 | Path | Role |
 | --- | --- |
 | `app/api/**`, `app/health`, `app/elapsed-config.json` | Route Handlers: the REST API Elapsed consumes (same routes, status codes, messages and CORS as before) |
-| `lib/server/` | Server only: `db.ts` (JSON file storage), `tickets.ts` (business rules and validation), `http.ts` (auth, JSON, errors), `elapsed-config.ts` |
+| `lib/server/` | Server only: `db.ts` (Supabase or JSON file, revision-checked saves), `tickets.ts` (business rules and validation), `http.ts` (auth, JSON, errors), `elapsed-config.ts` |
 | `lib/` | Shared pure logic: types, formatting, the derived customers / requesters / agents directory, filters, payload builders (unit-tested) |
 | `app/**/page.tsx` | Server Components: routing and metadata. They render the client views |
 | `components/desk/` | The lab UI. Views are Client Components because the API token lives in the browser and the UI calls the same public API as Elapsed |
@@ -57,7 +57,15 @@ Import the repo in Vercel. The framework is detected as Next.js and no `vercel.j
 
 Vercel serves the app over HTTPS on a public host, so Elapsed can use `https://<your-app>.vercel.app/elapsed-config.json` without `CUSTOM_PROVIDER_ALLOW_PRIVATE_HOSTS`.
 
-On Vercel the project files are read-only and each serverless instance has its own `/tmp`, so the server writes the database to `/tmp/db.json`, which is per instance and wiped on cold starts. Use that only for short demos where losing data is fine; for data that persists use the VPS setup below.
+**Add Supabase for storage.** A serverless function has no disk that lasts, and each instance has its own memory, so without a shared database a ticket created on one instance is missing on the others ("Ticket … does not exist on the server"). To fix it:
+
+1. Create a Supabase project and run [`supabase/schema.sql`](supabase/schema.sql) in its SQL editor. It creates the `acmedesk_db` table.
+2. In the Vercel project's environment variables set `SUPABASE_URL` (the project URL, `https://<ref>.supabase.co`) and `SUPABASE_SERVICE_ROLE_KEY` (Project Settings → API). Keep the service role key server-side only; the table has row level security on and no policies, so the public anon key cannot read it.
+3. Redeploy.
+
+The whole database is one JSON document in the row `id = 'main'` (set `SUPABASE_TABLE` to use another table). Every API request reads it, and every change writes it back, so all instances see the same tickets. A save only succeeds if no other instance saved since the request read the data (the `rev` column); otherwise the request runs again on the newer data, so concurrent changes are not lost. To reset the data, delete the row (`delete from acmedesk_db;`). Because it is one document, keep totals modest.
+
+Without Supabase the server falls back to `/tmp/db.json` on Vercel, which is per instance and wiped on cold starts. Use that only for short demos where losing data is fine.
 
 ## Deploy for reliable storage (VPS)
 
@@ -69,14 +77,14 @@ npm ci && npm run build
 API_TOKEN=<your-token> PORT=4100 npm start
 ```
 
-Keep it running with a process manager (for example systemd or `pm2 start npm --name acmedesk -- start`), and put it behind a reverse proxy with HTTPS (for example Caddy or nginx) so Elapsed can reach it. Data is kept in `public/db.json` under the working directory. Back up that file, or set `DB_FILE` to a path on a persistent volume. Run a single process only: two processes writing the same file would overwrite each other's changes.
+Keep it running with a process manager (for example systemd or `pm2 start npm --name acmedesk -- start`), and put it behind a reverse proxy with HTTPS (for example Caddy or nginx) so Elapsed can reach it. Data is kept in `public/db.json` under the working directory. Back up that file, or set `DB_FILE` to a path on a persistent volume. Run a single process only: two processes writing the same file would overwrite each other's changes. (To share data between processes, use Supabase instead.)
 
 ## Migrating from the previous version
 
 The previous version was a dependency-free Node server plus a vanilla-JS UI. What changed:
 
 - **Unchanged:** every API route, request/response shape, status code, error message, the bearer / `X-Api-Key` auth, CORS headers, `/health`, `/elapsed-config.json`, the JSON file format, and the environment variables (`PORT`, `API_TOKEN`, `DB_FILE`). Existing databases are read as they are.
-- **Removed:** Redis storage (`REDIS_KEY`, `UPSTASH_REDIS_REST_*`, `KV_REST_API_*`). The default database location moved from `data/db.json` to `public/db.json`.
+- **Removed:** Redis storage (`REDIS_KEY`, `UPSTASH_REDIS_REST_*`, `KV_REST_API_*`), replaced by Supabase (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_TABLE`). The default file database location moved from `data/db.json` to `public/db.json`.
 - **Changed:** you now need `npm install` and a build (`npm run build`) before `npm start`; `node server.js` no longer exists. Node 20.9+ is required. `vercel.json` and `api/index.js` were removed. The UI is rebuilt in React with the same routes and features; it keeps the token and acting-as identity in `localStorage` under the same keys.
 
 ## The lab UI

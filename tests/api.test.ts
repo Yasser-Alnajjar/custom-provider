@@ -39,6 +39,7 @@ const newTicket = (over: Record<string, unknown> = {}) => ({
 
 beforeAll(async () => {
   vi.stubEnv("DB_FILE", DB_FILE);
+  vi.stubEnv("SUPABASE_URL", "");
   vi.stubEnv("API_TOKEN", "test_token");
   routes = {
     tickets: await import("@/app/api/tickets/route"),
