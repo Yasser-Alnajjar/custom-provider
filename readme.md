@@ -101,6 +101,7 @@ The UI is a React app (Next.js App Router) served by the same server, so it alwa
 | `/requesters`, `/requesters/:key` | Requesters with their tickets and comments |
 | `/agents`, `/agents/:id` | Assignees and agent authors with workload, replies, notes, status changes |
 | `/provider` | Base URL, API token, live `/health` and `/api/meta`, "acting as" identity, endpoint reference, Elapsed config |
+| `/config-builder` | Form-based builder for the whole Elapsed configuration document: every field is a control, live JSON preview, copy / download / import, reset to defaults, restore Acme Desk, validation next to each field, request-volume estimate. The contract lives in `lib/config-builder/contract.ts` |
 
 Customers, requesters and agents have no endpoints of their own: those pages are derived from the `customer`, `requester` and `assignee` objects on tickets and from event authors.
 
