@@ -1,6 +1,8 @@
 "use client";
 
 import { useId, useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { NativeSelect } from "@/components/desk/native-select";
 import {
@@ -130,7 +132,7 @@ export function TicketsSection() {
     <Section id="tickets" title="Tickets" description="Ticket list request, pagination and incremental sync" prefixes={["tickets", "incremental"]} defaultOpen badge={<Tag tone="req">required</Tag>}>
       <EndpointEditor base="tickets" perTicket={false} />
       <Group title="Incremental sync" note={<Tag tone="volume" title="Incremental sync limits what is re-fetched">affects requests</Tag>}>
-        <Toggle path="incremental.enabled" label="Enable incremental sync" help="Re-fetches only tickets changed since the last sync. Reference by using {{updatedSince}} in a ticket query parameter." />
+        <Toggle path="incremental.enabled" label="Include incremental" help="Writes the tickets.incremental object. When off the object is left out of the JSON and its values are kept here. It takes effect through {{updatedSince}} in a ticket query parameter." />
         {enabled && (
           <div className="grid grid-cols-2 gap-3 max-sm:grid-cols-1">
             <TextField path="incremental.format" label="format" suggestions={KNOWN_VALUES.incrementalFormat} placeholder="iso8601" help="How {{updatedSince}} is rendered." />
@@ -147,7 +149,7 @@ export function CommentsSection() {
 
   return (
     <Section id="comments" title="Comments" description="Per-ticket comment requests" prefixes={["comments", "commentMapping"]} badge={<Tag tone={enabled ? "volume" : "opt"}>{enabled ? "enabled · 1+ request per ticket" : "disabled"}</Tag>}>
-      <Toggle path="comments.enabled" label="Fetch comments" help="When off, the comments object is left out of the JSON (your settings are kept in the form)." />
+      <Toggle path="comments.enabled" label="Include comments" help="The document has no on/off key, so off means the comments object is left out of the JSON. Its values stay in the form and come back when switched on again." />
       {enabled && <EndpointEditor base="comments" perTicket />}
     </Section>
   );
@@ -158,7 +160,7 @@ export function StatusHistorySection() {
 
   return (
     <Section id="history" title="Status History" description="Per-ticket status transition requests" prefixes={["statusHistory"]} badge={<Tag tone={enabled ? "volume" : "opt"}>{enabled ? "enabled · 1+ request per ticket" : "disabled"}</Tag>}>
-      <Toggle path="statusHistory.enabled" label="Fetch status history" help="When off, the statusHistory object (including its mapping) is left out of the JSON." />
+      <Toggle path="statusHistory.enabled" label="Include status history" help="The document has no on/off key, so off means the statusHistory object (with its mapping) is left out of the JSON. Its values stay in the form and come back when switched on again." />
       {enabled && (
         <>
           <EndpointEditor base="statusHistory" perTicket />
@@ -235,75 +237,94 @@ export function ImportBehaviorSection() {
   );
 }
 
-const PARENTS = [
-  ["", "Document root"], ["connection", "connection"], ["auth", "auth"], ["tickets", "tickets"], ["tickets.request", "tickets.request"],
-  ["tickets.pagination", "tickets.pagination"], ["tickets.incremental", "tickets.incremental"], ["comments", "comments"],
-  ["comments.request", "comments.request"], ["comments.pagination", "comments.pagination"], ["statusHistory", "statusHistory"],
-  ["statusHistory.request", "statusHistory.request"], ["statusHistory.pagination", "statusHistory.pagination"], ["statusHistory.mapping", "statusHistory.mapping"],
-  ["mapping", "mapping"], ["commentMapping", "commentMapping"], ["valueMaps", "valueMaps"], ["creationActor", "creationActor"],
-] as const;
-
-function ExtrasEditor({ path }: { path: string }) {
-  const { state, update, issues } = useBuilder();
+/** One preserved value, edited according to its JSON type. The key itself is fixed. */
+function ExtraValue({ path, name, value }: { path: string; name: string; value: unknown }) {
+  const { update, issues } = useBuilder();
   const id = useId();
-  const [text, setText] = useState(() => JSON.stringify(state.extras[path] ?? {}, null, 2));
-  const [parseError, setParseError] = useState("");
-  const issue = issues[`extras.${path}`];
+  const [text, setText] = useState(() => (typeof value === "number" ? String(value) : JSON.stringify(value, null, 2)));
+  const [bad, setBad] = useState("");
+  const set = (v: unknown) => update((s) => setExtras(s, path, { ...s.extras[path], [name]: v }));
+  const label = path ? `${path}.${name}` : name;
+  const collision = issues[`extras.${path}`];
 
-  function change(next: string) {
-    setText(next);
-    try {
-      const v: unknown = JSON.parse(next);
+  let control: React.ReactNode;
 
-      if (typeof v !== "object" || v === null || Array.isArray(v)) throw new Error("must be a JSON object");
-      setParseError("");
-      update((s) => setExtras(s, path, v as Record<string, unknown>));
-    } catch (e) {
-      setParseError(e instanceof Error ? e.message : "invalid JSON");
-    }
+  if (typeof value === "string") {
+    control = <Input id={id} value={value} spellCheck={false} className="font-mono text-small" onChange={(e) => set(e.target.value)} />;
+  } else if (typeof value === "boolean") {
+    control = (
+      <NativeSelect id={id} value={String(value)} onChange={(e) => set(e.target.value === "true")}>
+        <option value="true">true</option>
+        <option value="false">false</option>
+      </NativeSelect>
+    );
+  } else if (typeof value === "number") {
+    control = (
+      <Input
+        id={id}
+        value={text}
+        inputMode="decimal"
+        aria-invalid={!!bad || undefined}
+        className="font-mono text-small"
+        onChange={(e) => {
+          setText(e.target.value);
+          if (e.target.value.trim() !== "" && Number.isFinite(Number(e.target.value))) {
+            setBad("");
+            set(Number(e.target.value));
+          } else setBad("Not applied: enter a number.");
+        }}
+      />
+    );
+  } else {
+    control = (
+      <Textarea
+        id={id}
+        value={text}
+        spellCheck={false}
+        aria-invalid={!!bad || undefined}
+        className="min-h-12 font-mono text-small"
+        onChange={(e) => {
+          setText(e.target.value);
+          try {
+            set(JSON.parse(e.target.value));
+            setBad("");
+          } catch (err) {
+            setBad(`Not applied: ${err instanceof Error ? err.message : "invalid JSON"}`);
+          }
+        }}
+      />
+    );
   }
 
-  const error = parseError ? `Not applied: ${parseError}` : issue?.message;
-
   return (
-    <div className="grid gap-1.5" data-field={`extras.${path}`}>
-      <Field path={`extras.${path}`} label={path || "(document root)"} htmlFor={id}>
-        <Textarea id={id} value={text} spellCheck={false} aria-invalid={!!error || undefined} className="min-h-14 font-mono text-small" onChange={(e) => change(e.target.value)} />
-      </Field>
-      {parseError && <p role="alert" className="text-micro text-bad">{error}</p>}
+    <div className="grid gap-1" data-field={`extras.${label}`}>
+      <Label htmlFor={id} className="flex-wrap gap-1.5 text-small">
+        <span className="font-mono">{label}</span>
+        <Tag tone="opt">{Array.isArray(value) ? "array" : value === null ? "null" : typeof value}</Tag>
+      </Label>
+      {control}
+      {bad && <p role="alert" className="text-micro text-bad">{bad}</p>}
+      {!bad && collision && <p className="text-micro text-bad">{collision.message}</p>}
     </div>
   );
 }
 
 export function AdditionalFieldsSection({ revision }: { revision: number }) {
-  const { state, update } = useBuilder();
+  const { state } = useBuilder();
   const paths = Object.keys(state.extras);
-  const available = PARENTS.filter(([p]) => !(p in state.extras));
   const count = paths.reduce((n, p) => n + Object.keys(state.extras[p]).length, 0);
 
   return (
-    <Section id="additional" title="Additional fields" description="Keys without a dedicated control, written to the JSON unchanged" prefixes={["extras"]} badge={count > 0 ? <Tag tone="opt">{count} preserved</Tag> : undefined}>
+    <Section id="additional" title="Additional fields" description="Values from the document that no dedicated control can show" prefixes={["extras"]} badge={count > 0 ? <Tag tone="opt">{count} preserved</Tag> : undefined}>
       <p className="text-micro text-[#78869d]">
-        Anything found on import that this builder has no control for (unknown keys, or values of an unexpected type) lands here and is exported unchanged. You can also add keys yourself, for example options the Elapsed runtime supports that are not listed above.
+        Keys this builder has no control for, and values whose JSON type differs from the control (for example an object where a string is expected), appear here. They are exported unchanged and can be edited as their own type; keys cannot be added or renamed.
       </p>
-      {paths.map((p) => <ExtrasEditor key={`${revision}:${p}`} path={p} />)}
-      <div className="flex items-center gap-2">
-        <label htmlFor="add-extras" className="text-small text-[#9aa7bc]">Add fields to</label>
-        <NativeSelect
-          id="add-extras"
-          value=""
-          disabled={available.length === 0}
-          onChange={(e) => {
-            const target = e.target.value;
-
-            if (target === "__root") update((s) => setExtras(s, "", { newKey: "value" }));
-            else if (target) update((s) => setExtras(s, target, { newKey: "value" }));
-          }}
-        >
-          <option value="">Choose a JSON object…</option>
-          {available.map(([p, label]) => <option key={p} value={p === "" ? "__root" : p}>{label}</option>)}
-        </NativeSelect>
-      </div>
+      {count === 0 && <p className="rounded-lg border border-dashed px-3 py-2 text-micro text-[#78869d]">Nothing to preserve: every key in the document has a control.</p>}
+      {paths.map((p) => (
+        <div key={`${revision}:${p}`} className="grid gap-3">
+          {Object.entries(state.extras[p]).map(([k, v]) => <ExtraValue key={`${revision}:${p}:${k}`} path={p} name={k} value={v} />)}
+        </div>
+      ))}
     </Section>
   );
 }

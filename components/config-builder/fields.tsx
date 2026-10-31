@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/desk/native-select";
-import { kvAdd, kvRemove, kvUpdate, setField, type KV } from "@/lib/config-builder/model";
+import { kvAdd, kvRemove, kvUpdate, setField, type KV, type ValueKind } from "@/lib/config-builder/model";
 import { cn } from "@/lib/utils";
 import { useBuilder, useValue } from "./context";
 
@@ -150,7 +150,7 @@ export function KeyValueEditor({
 
             return (
               <li key={row.id} className="grid gap-1" data-row={`${path}.${i}`}>
-                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 max-sm:grid-cols-[1fr_auto]">
+                <div className="grid grid-cols-[1fr_1fr_92px_auto] gap-2 max-sm:grid-cols-[1fr_1fr]">
                   <Input
                     aria-label={`${title} ${keyLabel} ${i + 1}`}
                     aria-invalid={k?.severity === "error" || undefined}
@@ -171,6 +171,16 @@ export function KeyValueEditor({
                     className="font-mono text-small max-sm:col-span-1 max-sm:row-start-2"
                     onChange={(e) => update((s) => kvUpdate(s, path, row.id, { value: e.target.value }))}
                   />
+                  <NativeSelect
+                    aria-label={`${title} value type ${i + 1}`}
+                    value={row.kind}
+                    title="JSON type of the value"
+                    onChange={(e) => update((s) => kvUpdate(s, path, row.id, { kind: e.target.value as ValueKind }))}
+                  >
+                    <option value="string">string</option>
+                    <option value="number">number</option>
+                    <option value="boolean">boolean</option>
+                  </NativeSelect>
                   <Button type="button" variant="destructive" size="icon" aria-label={`Remove ${title} ${i + 1}`} onClick={() => update((s) => kvRemove(s, path, row.id))}>×</Button>
                 </div>
                 {msg && <p id={`${base}-${i}`} role="alert" className={cn("text-micro", msg.severity === "error" ? "text-bad" : "text-warn")}>{msg.message}</p>}

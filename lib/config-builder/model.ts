@@ -10,11 +10,16 @@ import {
 
 type Obj = Record<string, unknown>;
 
+/** JSON type of a key/value entry's value, so numbers and booleans keep their type. */
+export type ValueKind = "string" | "number" | "boolean";
+
 export interface KV {
   /** UI identity only; never exported. */
   id: string;
   key: string;
+  /** Edited as text; exported according to `kind`. */
   value: string;
+  kind: ValueKind;
 }
 
 export interface PaginationState {
@@ -53,11 +58,17 @@ export interface BuilderState {
    * unchanged, so nothing is silently discarded.
    */
   extras: Record<string, Obj>;
+  /** JSON paths of keys that existed in the imported document. They are always written back (even when empty). */
+  present: Record<string, true>;
+  /** JSON paths of numeric fields that were strings in the imported document; they stay strings. */
+  asString: Record<string, true>;
+  /** Key order of every object in the imported document, so the export keeps it. */
+  order: Record<string, string[]>;
 }
 
 let counter = 0;
 export const uid = () => `kv${++counter}`;
-export const kv = (key = "", value = ""): KV => ({ id: uid(), key, value });
+export const kv = (key = "", value = "", kind: ValueKind = "string"): KV => ({ id: uid(), key, value, kind });
 
 const blankRecord = (defs: { key: string }[]) => Object.fromEntries(defs.map((d) => [d.key, ""]));
 
@@ -94,6 +105,9 @@ export function emptyState(): BuilderState {
     creationActorType: "",
     ticketUrlTemplate: "",
     extras: {},
+    present: {},
+    asString: {},
+    order: {},
   };
 }
 
@@ -159,9 +173,10 @@ export const setField = (s: BuilderState, path: string, value: string | boolean)
 
 const list = (s: BuilderState, path: string) => (getIn(s, path) as KV[]) ?? [];
 
-export const kvAdd = (s: BuilderState, path: string, key = "", value = ""): BuilderState => setIn(s, path, [...list(s, path), kv(key, value)]);
+export const kvAdd = (s: BuilderState, path: string, key = "", value = "", kind: ValueKind = "string"): BuilderState =>
+  setIn(s, path, [...list(s, path), kv(key, value, kind)]);
 
-export const kvUpdate = (s: BuilderState, path: string, id: string, patch: Partial<Pick<KV, "key" | "value">>): BuilderState =>
+export const kvUpdate = (s: BuilderState, path: string, id: string, patch: Partial<Pick<KV, "key" | "value" | "kind">>): BuilderState =>
   setIn(s, path, list(s, path).map((e) => (e.id === id ? { ...e, ...patch } : e)));
 
 export const kvRemove = (s: BuilderState, path: string, id: string): BuilderState =>
@@ -185,10 +200,16 @@ const num = (v: string): number | string => (v.trim() !== "" && Number.isFinite(
 
 const present = (v: string) => v.trim() !== "";
 
+const kvValue = (e: KV): unknown => {
+  if (e.kind === "number") return num(e.value);
+  if (e.kind === "boolean") return e.value === "true" ? true : e.value === "false" ? false : e.value;
+  return e.value;
+};
+
 export function kvToObject(entries: KV[]): Obj {
   const out: Obj = {};
 
-  for (const e of entries) if (e.key.trim() !== "") out[e.key.trim()] = e.value;
+  for (const e of entries) if (e.key.trim() !== "") out[e.key.trim()] = kvValue(e);
   return out;
 }
 
@@ -198,6 +219,10 @@ export interface ToConfigOptions {
 }
 
 export function toConfig(s: BuilderState, opts: ToConfigOptions = {}): Obj {
+  const has = (path: string) => !!s.present[path];
+  /** Numbers stay numbers unless the imported document had that field as a string. */
+  const typed = (path: string, v: string): unknown => (s.asString[path] ? v : num(v));
+
   /** Adds preserved keys that the builder did not write itself. */
   const ext = (path: string, base: Obj): Obj => {
     const extra = opts.withoutExtras ? undefined : s.extras[path];
@@ -215,7 +240,7 @@ export function toConfig(s: BuilderState, opts: ToConfigOptions = {}): Obj {
     for (const def of paginationType(p.type)?.params ?? []) {
       const v = p.values[def.key] ?? "";
 
-      if (def.required || present(v)) out[def.key] = def.kind === "int" ? num(v) : v;
+      if (def.required || present(v) || has(`${path}.${def.key}`)) out[def.key] = def.kind === "int" ? typed(`${path}.${def.key}`, v) : v;
     }
     return ext(path, out);
   };
@@ -225,24 +250,24 @@ export function toConfig(s: BuilderState, opts: ToConfigOptions = {}): Obj {
     const request = ext(`${path}.request`, {
       method: e.request.method,
       path: e.request.path,
-      ...(Object.keys(query).length ? { query } : {}),
+      ...(Object.keys(query).length || has(`${path}.request.query`) ? { query } : {}),
     });
     const out: Obj = { request, itemsPath: e.itemsPath };
     const pg = pagination(`${path}.pagination`, e.pagination);
 
-    if (pg && Object.keys(pg).length) out.pagination = pg;
+    if (pg && (Object.keys(pg).length || has(`${path}.pagination`))) out.pagination = pg;
     return out;
   };
 
   const mapped = (path: string, record: Record<string, string>, defs: { key: string; required: boolean }[]): Obj => {
     const out: Obj = {};
 
-    for (const d of defs) if (d.required || present(record[d.key] ?? "")) out[d.key] = record[d.key] ?? "";
+    for (const d of defs) if (d.required || present(record[d.key] ?? "") || has(`${path}.${d.key}`)) out[d.key] = record[d.key] ?? "";
     return ext(path, out);
   };
 
   const root: Obj = {
-    schemaVersion: num(s.schemaVersion),
+    schemaVersion: typed("schemaVersion", s.schemaVersion),
     displayName: s.displayName,
     connection: ext("connection", { baseUrl: s.baseUrl }),
     auth: ext("auth", { type: s.authType }),
@@ -253,8 +278,8 @@ export function toConfig(s: BuilderState, opts: ToConfigOptions = {}): Obj {
   if (s.incremental.enabled) {
     const inc: Obj = {};
 
-    if (present(s.incremental.format)) inc.format = s.incremental.format;
-    if (present(s.incremental.lookbackSeconds)) inc.lookbackSeconds = num(s.incremental.lookbackSeconds);
+    if (present(s.incremental.format) || has("tickets.incremental.format")) inc.format = s.incremental.format;
+    if (present(s.incremental.lookbackSeconds) || has("tickets.incremental.lookbackSeconds")) inc.lookbackSeconds = typed("tickets.incremental.lookbackSeconds", s.incremental.lookbackSeconds);
     tickets.incremental = ext("tickets.incremental", inc);
   }
   root.tickets = ext("tickets", tickets);
@@ -275,19 +300,35 @@ export function toConfig(s: BuilderState, opts: ToConfigOptions = {}): Obj {
   for (const m of VALUE_MAPS) {
     const o = ext(`valueMaps.${m.key}`, kvToObject(s.valueMaps[m.key]));
 
-    if (Object.keys(o).length) valueMaps[m.key] = o;
+    if (Object.keys(o).length || has(`valueMaps.${m.key}`)) valueMaps[m.key] = o;
   }
   const vm = ext("valueMaps", valueMaps);
 
-  if (Object.keys(vm).length) root.valueMaps = vm;
+  if (Object.keys(vm).length || has("valueMaps")) root.valueMaps = vm;
 
-  if (present(s.unknownStatus)) root.unknownStatus = s.unknownStatus;
-  if (present(s.importWindowDays)) root.importWindowDays = num(s.importWindowDays);
-  if (present(s.slaMode)) root.slaMode = s.slaMode;
-  if (present(s.creationActorType)) root.creationActor = ext("creationActor", { type: s.creationActorType });
-  if (present(s.ticketUrlTemplate)) root.ticketUrlTemplate = s.ticketUrlTemplate;
+  if (present(s.unknownStatus) || has("unknownStatus")) root.unknownStatus = s.unknownStatus;
+  if (present(s.importWindowDays) || has("importWindowDays")) root.importWindowDays = typed("importWindowDays", s.importWindowDays);
+  if (present(s.slaMode) || has("slaMode")) root.slaMode = s.slaMode;
+  const actor = ext("creationActor", present(s.creationActorType) || has("creationActor.type") ? { type: s.creationActorType } : {});
 
-  return ext("", root);
+  if (Object.keys(actor).length || has("creationActor")) root.creationActor = actor;
+  if (present(s.ticketUrlTemplate) || has("ticketUrlTemplate")) root.ticketUrlTemplate = s.ticketUrlTemplate;
+
+  return reorder(ext("", root), s.order, "");
+}
+
+/** Puts keys in the order recorded at import; keys without a recorded position follow in their generated order. */
+function reorder(o: Obj, order: Record<string, string[]>, path: string): Obj {
+  const want = order[path] ?? [];
+  const keys = Object.keys(o);
+  const out: Obj = {};
+
+  for (const k of [...want.filter((k) => k in o), ...keys.filter((k) => !want.includes(k))]) {
+    const v = o[k];
+
+    out[k] = isObj(v) ? reorder(v, order, path ? `${path}.${k}` : k) : v;
+  }
+  return out;
 }
 
 export const serialize = (s: BuilderState) => JSON.stringify(toConfig(s), null, 2);
@@ -301,6 +342,8 @@ const isObj = (v: unknown): v is Obj => typeof v === "object" && v !== null && !
 class Reader {
   extras: Record<string, Obj> = {};
   notes: string[] = [];
+  present: Record<string, true> = {};
+  asString: Record<string, true> = {};
 
   /** Takes an object child out of `parent`. A non-object value stays on the parent (so it is preserved) and is reported. */
   obj(parent: Obj, key: string, path: string): Obj | undefined {
@@ -312,6 +355,7 @@ class Reader {
       return undefined;
     }
     delete parent[key];
+    this.present[join(path, key)] = true;
     return { ...v };
   }
 
@@ -324,6 +368,7 @@ class Reader {
       return "";
     }
     delete o[key];
+    this.present[join(path, key)] = true;
     return v;
   }
 
@@ -333,12 +378,15 @@ class Reader {
     if (v === undefined) return "";
     if (typeof v === "number" && Number.isFinite(v)) {
       delete o[key];
+      this.present[join(path, key)] = true;
       return String(v);
     }
     if (typeof v === "string" && v.trim() !== "" && Number.isFinite(Number(v))) {
-      this.notes.push(`${join(path, key)}: was the string "${v}"; it is exported as a number.`);
+      // Edited as a number would be, but written back as the string it was.
       delete o[key];
-      return v.trim();
+      this.present[join(path, key)] = true;
+      this.asString[join(path, key)] = true;
+      return v;
     }
     this.notes.push(`${join(path, key)}: expected a number; kept unchanged as an additional field.`);
     return "";
@@ -353,10 +401,10 @@ class Reader {
     const out: KV[] = [];
 
     for (const [k, v] of Object.entries(o)) {
-      if (typeof v === "string") {
-        out.push(kv(k, v));
+      if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") {
+        out.push(kv(k, String(v), typeof v as ValueKind));
         delete o[k];
-      } else this.notes.push(`${join(p, k)}: value is not a string; kept unchanged as an additional field.`);
+      } else this.notes.push(`${join(p, k)}: value is an object, array or null; kept unchanged as an additional field.`);
     }
     this.done(o, p);
     return out;
@@ -385,6 +433,12 @@ class Reader {
 const join = (path: string, key: string) => (path ? `${path}.${key}` : key);
 
 export type ImportResult = { ok: true; state: BuilderState; notes: string[] } | { ok: false; error: string };
+
+function recordOrder(v: unknown, path: string, into: Record<string, string[]>) {
+  if (!isObj(v)) return;
+  into[path] = Object.keys(v);
+  for (const [k, child] of Object.entries(v)) recordOrder(child, path ? `${path}.${k}` : k, into);
+}
 
 /** Parses a configuration document into builder state. Unknown or mistyped fields are kept as additional fields. */
 export function configToState(raw: unknown): ImportResult {
@@ -486,6 +540,10 @@ export function configToState(raw: unknown): ImportResult {
   r.done(root, "");
 
   s.extras = r.extras;
+  s.present = r.present;
+  s.asString = r.asString;
+  s.order = {};
+  recordOrder(raw, "", s.order);
   for (const [path, o] of Object.entries(r.extras)) {
     const where = path || "the document root";
 

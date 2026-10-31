@@ -18,6 +18,23 @@ export interface Issue {
   message: string;
 }
 
+/** The JSON path of the document key behind a form path (they differ only for a few fields). */
+function jsonPath(p: string): string {
+  const fixed: Record<string, string> = { baseUrl: "connection.baseUrl", authType: "auth.type", creationActorType: "creationActor.type" };
+
+  if (fixed[p]) return fixed[p];
+  if (p.startsWith("incremental.")) return `tickets.${p}`;
+  return p.replace(".values.", ".");
+}
+
+/** True when the document has a value at this key that the form cannot show (kept under Additional fields). */
+function hasExtra(s: BuilderState, formPath: string): boolean {
+  const jp = jsonPath(formPath);
+  const i = jp.lastIndexOf(".");
+
+  return (i < 0 ? "" : jp.slice(0, i)) in s.extras && jp.slice(i + 1) in s.extras[i < 0 ? "" : jp.slice(0, i)];
+}
+
 const isInt = (v: string) => /^-?\d+$/.test(v.trim());
 
 export function validate(s: BuilderState): Issue[] {
@@ -26,7 +43,7 @@ export function validate(s: BuilderState): Issue[] {
   const warn = (path: string, message: string) => issues.push({ path, severity: "warning", message });
 
   const required = (path: string, v: string, label: string) => {
-    if (v.trim() === "") err(path, `${label} is required.`);
+    if (v.trim() === "" && !hasExtra(s, path)) err(path, `${label} is required.`);
     return v.trim() !== "";
   };
 
@@ -46,6 +63,8 @@ export function validate(s: BuilderState): Issue[] {
     entries.forEach((e, i) => {
       const key = e.key.trim();
 
+      if (e.kind === "number" && e.value.trim() !== "" && !Number.isFinite(Number(e.value))) err(`${path}.${i}.value`, "Not a valid number; choose another type or fix the value.");
+      if (e.kind === "boolean" && e.value !== "true" && e.value !== "false") err(`${path}.${i}.value`, "A boolean must be true or false.");
       if (key === "") {
         if (e.value !== "") err(`${path}.${i}.key`, `${label} name is required.`);
       } else if (seen.has(key)) err(`${path}.${i}.key`, `Duplicate ${label.toLowerCase()} "${key}"; only the last value would be exported.`);
@@ -59,7 +78,7 @@ export function validate(s: BuilderState): Issue[] {
       const p = `${path}.${d.key}`;
 
       if (v.trim() === "") {
-        if (d.required) err(p, `${d.label} is required.`);
+        if (d.required && !hasExtra(s, p)) err(p, `${d.label} is required.`);
       } else if (!v.trim().startsWith("$")) err(p, "A JSONPath expression must start with $ (for example $.id).");
     }
   };

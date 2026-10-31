@@ -85,14 +85,20 @@ describe("import / export", () => {
     expect(JSON.parse(serialize(r.state)).displayName).toBe(42);
   });
 
-  it("coerces numeric strings to numbers and says so", () => {
+  it("keeps numeric strings as strings, including after editing them", () => {
     const cfg = acme() as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-    cfg.importWindowDays = "30";
+    cfg.importWindowDays = "90";
+    cfg.tickets.pagination.pageSize = "50";
     const r = configToState(cfg);
 
-    expect(r.ok && r.notes.some((n) => n.includes("importWindowDays"))).toBe(true);
-    expect(out((r as { state: BuilderState }).state).importWindowDays).toBe(30);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(JSON.parse(serialize(r.state))).toEqual(cfg);
+    const edited = setField(setField(r.state, "importWindowDays", "30"), "tickets.pagination.values.pageSize", "25");
+
+    expect(out(edited).importWindowDays).toBe("30");
+    expect(out(edited).tickets.pagination.pageSize).toBe("25");
   });
 
   it("treats absent comments/statusHistory/incremental as disabled and keeps them out of the output", () => {
@@ -200,7 +206,11 @@ describe("Query parameters", () => {
     expect(out(s).tickets.request.query).toEqual({ updated_since: "{{updatedSince}}", state: "closed" });
     s = kvRemove(s, "tickets.request.query", id);
     s = kvRemove(s, "tickets.request.query", s.tickets.request.query[0].id);
-    expect(out(s).tickets.request.query).toBeUndefined(); // an empty query is omitted
+    expect(out(s).tickets.request.query).toEqual({}); // the key existed in the document, so it stays
+    const d = kvRemove(kvAdd(defaultState(), "tickets.request.query", "a", "b"), "tickets.request.query", "x");
+
+    expect(out(d).tickets.request.query).toBeDefined();
+    expect(out(kvRemove(d, "tickets.request.query", d.tickets.request.query[0].id)).tickets.request.query).toBeUndefined(); // never in the document: omitted
   });
 
   it("works for comments and status history as well", () => {
@@ -357,7 +367,8 @@ describe("Mappings", () => {
   it("omits cleared optional fields, keeps cleared required ones (flagged)", () => {
     let s = setField(fromAcme(), "mapping.channel", "");
 
-    expect("channel" in out(s).mapping).toBe(false);
+    expect(out(s).mapping.channel).toBe(""); // existing key is never removed
+    expect("channel" in out(setField(defaultState(), "mapping.channel", "")).mapping).toBe(false); // never in the document
     expect(errorPaths(s)).toEqual([]);
     s = setField(s, "mapping.id", "");
     expect(out(s).mapping.id).toBe("");
@@ -392,10 +403,11 @@ describe("Value maps", () => {
     let s = fromAcme();
 
     for (const e of s.valueMaps.authorRole) s = kvRemove(s, "valueMaps.authorRole", e.id);
-    expect(out(s).valueMaps.authorRole).toBeUndefined();
-    expect(out(s).valueMaps.status).toBeDefined();
-    for (const m of ["status", "priority"] as const) for (const e of s.valueMaps[m]) s = kvRemove(s, `valueMaps.${m}`, e.id);
-    expect(out(s).valueMaps).toBeUndefined();
+    expect(out(s).valueMaps.authorRole).toEqual({}); // existing keys are never removed
+    let d = defaultState();
+
+    for (const m of ["status", "priority", "authorRole"] as const) for (const e of d.valueMaps[m]) d = kvRemove(d, `valueMaps.${m}`, e.id);
+    expect(out(d).valueMaps).toBeUndefined(); // never in the document: omitted
   });
 
   it("flags duplicate keys and empty targets", () => {
@@ -422,7 +434,8 @@ describe("Import behaviour", () => {
   it("omits cleared optional settings and validates the window", () => {
     let s = setField(fromAcme(), "ticketUrlTemplate", "");
 
-    expect("ticketUrlTemplate" in out(s)).toBe(false);
+    expect(out(s).ticketUrlTemplate).toBe("");
+    expect("ticketUrlTemplate" in out(defaultState())).toBe(false);
     s = setField(s, "importWindowDays", "0");
     expect(errorPaths(s)).toContain("importWindowDays");
     s = setField(s, "importWindowDays", "1.5");
@@ -495,5 +508,88 @@ describe("Validation of invalid documents", () => {
 
     expect(res.ok).toBe(false);
     expect(errorsOf(res.issues).map((i) => i.path)).toEqual(expect.arrayContaining(["tickets.pagination.values.pageSize", "baseUrl", "mapping.title"]));
+  });
+});
+
+describe("Lossless round trip (import -> export)", () => {
+  const variants: Record<string, (c: any) => void> = { // eslint-disable-line @typescript-eslint/no-explicit-any
+    "optional mapping present but empty": (c) => { c.mapping.channel = ""; },
+    "empty query object": (c) => { c.tickets.request.query = {}; },
+    "empty incremental object": (c) => { c.tickets.incremental = {}; },
+    "empty value map objects": (c) => { c.valueMaps.status = {}; c.valueMaps.priority = {}; },
+    "empty valueMaps object": (c) => { c.valueMaps = {}; },
+    "empty pagination object": (c) => { c.comments.pagination = {}; },
+    "numeric strings": (c) => { c.importWindowDays = "90"; c.schemaVersion = "1"; c.tickets.incremental.lookbackSeconds = "300"; },
+    "number and boolean query values": (c) => { c.tickets.request.query.limit = 50; c.tickets.request.query.flag = true; c.tickets.request.query.off = false; },
+    "number and boolean value-map values": (c) => { c.valueMaps.priority.low = 1; c.valueMaps.status.x = true; },
+    "key order": (c) => { c.mapping = { channel: c.mapping.channel, ...c.mapping }; c.tickets = { pagination: c.tickets.pagination, ...c.tickets }; c.valueMaps = { authorRole: c.valueMaps.authorRole, ...c.valueMaps }; },
+    "unknown pagination type": (c) => { c.tickets.pagination = { type: "cursor", cursorParam: "c", limit: 25, flag: true }; },
+    "none with leftover keys": (c) => { c.comments.pagination = { type: "none", param: "page", pageSize: 10 }; },
+    "non-string known values": (c) => { c.mapping.id = { path: "$.id" }; c.displayName = 42; },
+    "unknown keys at every level": (c) => { c.auth.x = 1; c.connection.y = [1]; c.creationActor.z = null; c.statusHistory.mapping.extra = "$.e"; },
+    "no optional sections": (c) => { delete c.comments; delete c.statusHistory; delete c.tickets.incremental; delete c.valueMaps; delete c.ticketUrlTemplate; },
+  };
+
+  for (const [name, mutate] of Object.entries(variants)) {
+    it(`preserves: ${name} (values, types, structure and key order)`, () => {
+      const cfg = acme() as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+      mutate(cfg);
+      const r = configToState(cfg);
+
+      expect(r.ok).toBe(true);
+      if (r.ok) expect(serialize(r.state)).toBe(JSON.stringify(cfg, null, 2));
+    });
+  }
+
+  it("a single edit changes only that value; everything else is untouched", () => {
+    const cfg = acme() as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    cfg.mapping = { channel: "", ...cfg.mapping };
+    cfg.tickets.request.query.limit = 50;
+    const r = configToState(cfg);
+
+    if (!r.ok) throw new Error(r.error);
+    const edited = JSON.parse(serialize(setField(r.state, "tickets.pagination.values.pageSize", "100")));
+    const expected = JSON.parse(JSON.stringify(cfg));
+
+    expected.tickets.pagination.pageSize = 100;
+    expect(edited).toEqual(expected);
+    expect(Object.keys(edited.mapping)).toEqual(Object.keys(cfg.mapping));
+  });
+
+  it("typed query / value-map entries keep their JSON type when edited", () => {
+    const cfg = acme() as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    cfg.tickets.request.query.limit = 50;
+    cfg.tickets.request.query.flag = true;
+    const r = configToState(cfg);
+
+    if (!r.ok) throw new Error(r.error);
+    const [, limit, flag] = r.state.tickets.request.query;
+
+    expect([limit.kind, flag.kind]).toEqual(["number", "boolean"]);
+    let s = kvUpdate(r.state, "tickets.request.query", limit.id, { value: "75" });
+
+    s = kvUpdate(s, "tickets.request.query", flag.id, { value: "false" });
+    expect(out(s).tickets.request.query).toMatchObject({ limit: 75, flag: false });
+    s = kvUpdate(s, "tickets.request.query", limit.id, { kind: "string" });
+    expect(out(s).tickets.request.query.limit).toBe("75");
+    expect(errorPaths(kvUpdate(r.state, "tickets.request.query", limit.id, { value: "abc" }))).toContain("tickets.request.query.1.value");
+    expect(errorPaths(kvUpdate(r.state, "tickets.request.query", flag.id, { value: "maybe" }))).toContain("tickets.request.query.2.value");
+  });
+
+  it("a value the form cannot show is not reported as missing, and stays editable as its own type", () => {
+    const cfg = acme() as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    cfg.mapping.id = { path: "$.id" };
+    cfg.displayName = 42;
+    const r = configToState(cfg);
+
+    if (!r.ok) throw new Error(r.error);
+    expect(errorPaths(r.state)).toEqual([]);
+    const s = setExtras(r.state, "", { displayName: 43 });
+
+    expect(out(s).displayName).toBe(43);
   });
 });
