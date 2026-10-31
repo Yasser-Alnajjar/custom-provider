@@ -1,5 +1,3 @@
-import { PORT } from "./config";
-
 /** The Custom REST configuration document that Elapsed imports. */
 export function elapsedConfig(origin: string) {
   return {
@@ -69,24 +67,35 @@ export function elapsedConfig(origin: string) {
         solved: "resolved",
         closed: "closed",
       },
-      priority: { low: "low", normal: "normal", high: "high", urgent: "urgent" },
+      priority: {
+        low: "low",
+        normal: "normal",
+        high: "high",
+        urgent: "urgent",
+      },
       authorRole: { customer: "customer", agent: "agent", system: "system" },
     },
     unknownStatus: "fail",
     importWindowDays: 90,
     slaMode: "full",
     creationActor: { type: "first_comment_author" },
-    ticketUrlTemplate: `http://127.0.0.1:${PORT}/tickets/{id}`,
+    ticketUrlTemplate: `${origin}/tickets/{id}`,
   };
 }
 
-const first = (value: string | null) => (value ? value.split(",")[0].trim() : "");
+const first = (value: string | null) =>
+  value ? value.split(",")[0].trim() : "";
 
 /** Behind a proxy (Vercel) the original protocol and host arrive as forwarded headers. */
 export function requestOrigin(req: Request): string {
   const url = new URL(req.url);
-  const protocol = first(req.headers.get("x-forwarded-proto")) || url.protocol.replace(":", "");
-  const host = first(req.headers.get("x-forwarded-host")) || req.headers.get("host") || url.host;
+  const protocol =
+    first(req.headers.get("x-forwarded-proto")) ||
+    url.protocol.replace(":", "");
+  const host =
+    first(req.headers.get("x-forwarded-host")) ||
+    req.headers.get("host") ||
+    url.host;
 
   // Node may resolve `localhost` to IPv6; Elapsed should use the IPv4 literal.
   return `${protocol}://${host.replace(/^localhost(?=:|$)/, "127.0.0.1")}`;
