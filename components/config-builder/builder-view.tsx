@@ -13,6 +13,7 @@ import { estimateRequests } from "@/lib/config-builder/volume";
 import { elapsedConfig } from "@/lib/server/elapsed-config";
 import { cn } from "@/lib/utils";
 import { BuilderContext } from "./context";
+import { ServerSettings } from "./server-settings";
 import {
   AdditionalFieldsSection, CommentMappingSection, CommentsSection, GeneralSection, ImportBehaviorSection,
   StatusHistorySection, TicketMappingSection, TicketsSection, ValueMapsSection,
@@ -61,6 +62,7 @@ function Builder({ origin }: { origin: string }) {
   const [importText, setImportText] = useState("");
   const [importError, setImportError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = useState<"json" | "server">("json");
 
   const update = useCallback((fn: (s: BuilderState) => BuilderState) => setState(fn), []);
   const issues = useMemo(() => validate(state), [state]);
@@ -115,15 +117,37 @@ function Builder({ origin }: { origin: string }) {
     <BuilderContext.Provider value={{ state, update, issues: map, all: issues }}>
       <PageHeader
         title="Config builder"
-        subtitle="Every field of the Elapsed Custom REST document is a control. The JSON on the right is generated from the form and updates as you type."
+        subtitle={tab === "json" ? "Every field of the Elapsed Custom REST document is a control. The JSON on the right is generated from the form and updates as you type." : "Settings of the running Custom Provider API. They are saved on the server and are not part of the provider JSON."}
         actions={
-          <>
-            <Button variant="outline" onClick={() => replace(defaultState(origin), "Reset to defaults")}>Reset to defaults</Button>
-            <Button variant="outline" onClick={() => replace(acmeState(origin), "Acme Desk configuration restored")}>Restore Acme Desk</Button>
-          </>
+          tab === "json" && (
+            <>
+              <Button variant="outline" onClick={() => replace(defaultState(origin), "Reset to defaults")}>Reset to defaults</Button>
+              <Button variant="outline" onClick={() => replace(acmeState(origin), "Acme Desk configuration restored")}>Restore Acme Desk</Button>
+            </>
+          )
         }
       />
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,520px)] items-start gap-4 max-xl:grid-cols-1">
+      <div role="tablist" aria-label="Configuration" className="mb-4 flex gap-1 border-b">
+        {([["json", "Provider JSON"], ["server", "Server settings"]] as const).map(([id, label]) => (
+          <button
+            key={id}
+            role="tab"
+            type="button"
+            id={`tab-${id}`}
+            aria-selected={tab === id}
+            onClick={() => setTab(id)}
+            className={cn("-mb-px border-b-2 px-3.5 py-2 text-body font-semibold", tab === id ? "border-primary text-[#f4f7fc]" : "border-transparent text-[#8794aa] hover:text-white")}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {tab === "server" && (
+        <div role="tabpanel" aria-labelledby="tab-server" className="max-w-[900px]">
+          <ServerSettings jsonPageSize={state.tickets.pagination.type === "page" ? state.tickets.pagination.values.pageSize ?? "" : ""} jsonSizeParam={state.tickets.pagination.values.sizeParam ?? ""} />
+        </div>
+      )}
+      <div className={cn("grid grid-cols-[minmax(0,1fr)_minmax(0,520px)] items-start gap-4 max-xl:grid-cols-1", tab !== "json" && "hidden")}>
         <div>
           <GeneralSection />
           <TicketsSection />

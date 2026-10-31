@@ -7,5 +7,5 @@ export const OPTIONS = preflight;
 
 /** Deletes every synthetic ticket (and its events); real tickets are untouched. */
 export const DELETE = api(async () =>
-  json({ data: await withDb(true, (state) => (assertEnabled(), purgeSynthetic(state))) }),
+  json({ data: await withDb(true, (state) => (assertEnabled(state), purgeSynthetic(state))) }),
 );

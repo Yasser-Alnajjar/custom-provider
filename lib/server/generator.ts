@@ -11,15 +11,15 @@ const KEY = /^[A-Za-z0-9_.:-]{8,100}$/;
 
 const state_ = (state: DbState) => (state.generation ??= { seq: 0, jobs: [] });
 
-export function assertEnabled() {
-  if (!generatorLimits().enabled) {
+export function assertEnabled(state?: DbState) {
+  if (!generatorLimits(state).enabled) {
     throw new HttpError(403, "disabled", "The synthetic data generator is disabled (GENERATOR_ENABLED=0).");
   }
 }
 
 /** Validates the requested count: an integer from 1 to the configured maximum. */
-export function parseCount(value: unknown): number {
-  const { maxTickets } = generatorLimits();
+export function parseCount(value: unknown, state?: DbState): number {
+  const { maxTickets } = generatorLimits(state);
 
   if (typeof value !== "number" || !Number.isInteger(value)) throw validationError("count must be a whole number");
   if (value < 1 || value > maxTickets) throw validationError(`count must be between 1 and ${maxTickets}`);
@@ -49,7 +49,7 @@ export function listJobs(state: DbState) {
   return {
     items: [...jobs].reverse().map((j) => progress(state, j)),
     total: jobs.length,
-    limits: generatorLimits(),
+    limits: generatorLimits(state),
     synthetic_tickets: state.tickets.filter(isSyntheticTicket).length,
   };
 }
@@ -62,9 +62,9 @@ export const getJob = (state: DbState, id: string) => progress(state, findJob(st
  * database from competing generations.
  */
 export function createJob(state: DbState, body: Record<string, unknown>) {
-  assertEnabled();
+  assertEnabled(state);
 
-  const count = parseCount(body.count);
+  const count = parseCount(body.count, state);
   const key = body.idempotency_key;
 
   if (typeof key !== "string" || !KEY.test(key)) {
@@ -83,7 +83,7 @@ export function createJob(state: DbState, body: Record<string, unknown>) {
 
   if (running) throw conflict(`Job ${running.id} is still running; wait for it or cancel it first`);
 
-  const { maxTotal, batchSize } = generatorLimits();
+  const { maxTotal, batchSize } = generatorLimits(state);
   const present = state.tickets.filter(isSyntheticTicket).length;
 
   if (present + count > maxTotal) {
@@ -123,7 +123,7 @@ export function createJob(state: DbState, body: Record<string, unknown>) {
  * all, and ticket ids are deterministic, so a repeated batch is a no-op.
  */
 export function advanceJob(state: DbState, id: string, now = Date.now()) {
-  assertEnabled();
+  assertEnabled(state);
 
   const job = findJob(state, id);
 
@@ -205,7 +205,7 @@ export function cancelJob(state: DbState, id: string) {
 
 /** Resumes a cancelled or failed job from its cursor; completed jobs cannot be resumed. */
 export function resumeJob(state: DbState, id: string) {
-  assertEnabled();
+  assertEnabled(state);
 
   const job = findJob(state, id);
 
