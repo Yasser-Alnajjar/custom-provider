@@ -272,6 +272,32 @@ export function deleteTicket(state: DbState, id: string) {
   return { id, deleted: true as const, events_removed: before - state.events.length };
 }
 
+/** Deletes `count` distinct tickets chosen uniformly at random, with their events. */
+export function deleteRandomTickets(state: DbState, count: unknown) {
+  if (typeof count !== "number" || !Number.isInteger(count) || count < 1) {
+    throw validationError("count must be a whole number of at least 1");
+  }
+  if (count > state.tickets.length) {
+    throw validationError(`count cannot exceed the ${state.tickets.length} existing tickets`);
+  }
+
+  const pool = state.tickets.map((t) => t.id);
+
+  // Partial Fisher-Yates: the first `count` entries end up a uniform random sample.
+  for (let i = 0; i < count; i++) {
+    const j = i + Math.floor(Math.random() * (pool.length - i));
+
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  const ids = new Set(pool.slice(0, count));
+  const before = state.events.length;
+
+  state.tickets = state.tickets.filter((t) => !ids.has(t.id));
+  state.events = state.events.filter((e) => !ids.has(e.ticket_id));
+  return { deleted: ids.size, events_removed: before - state.events.length };
+}
+
 export function addComment(state: DbState, body: Body): TicketEvent {
   const ticket = typeof body.ticket_id === "string" ? findTicket(state, body.ticket_id) : undefined;
 

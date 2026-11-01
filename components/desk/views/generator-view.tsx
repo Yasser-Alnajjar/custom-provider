@@ -9,6 +9,7 @@ import {
   advanceGeneration,
   ApiError,
   cancelGeneration,
+  deleteRandomTickets,
   getGenerator,
   purgeSynthetic,
   resumeGeneration,
@@ -59,6 +60,7 @@ export function GeneratorView() {
   const [overview, setOverview] = useState<GeneratorOverview | null>(null);
   const [error, setError] = useState("");
   const [count, setCount] = useState("100");
+  const [randomInput, setRandomInput] = useState("10");
   const [busy, setBusy] = useState(false); // a submit or purge is in flight
   const [driving, setDriving] = useState(false); // this tab is advancing a job
   const keyRef = useRef<string | null>(null); // idempotency key for the current submission
@@ -119,6 +121,8 @@ export function GeneratorView() {
   const limits = overview?.limits;
   const requested = Number(count);
   const valid = Number.isInteger(requested) && requested >= 1 && !!limits && requested <= limits.maxTickets;
+  const randomCount = Number(randomInput);
+  const randomValid = Number.isInteger(randomCount) && randomCount >= 1;
   const locked = busy || driving || !!running || !limits?.enabled;
 
   // A running job found on load (another tab, or a reload) is continued from here.
@@ -165,6 +169,24 @@ export function GeneratorView() {
       const { deleted } = await purgeSynthetic();
 
       toast.success(`Deleted ${plural(deleted, "synthetic ticket")}`);
+      await load();
+      await reload();
+    } catch (err) {
+      toast.error(message(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function removeRandom(e: React.FormEvent) {
+    e.preventDefault();
+    if (!randomValid) return;
+    if (!confirm(`Delete ${plural(randomCount, "ticket")} chosen at random? This includes real tickets and cannot be undone.`)) return;
+    setBusy(true);
+    try {
+      const { deleted } = await deleteRandomTickets(randomCount);
+
+      toast.success(`Deleted ${plural(deleted, "random ticket")}`);
       await load();
       await reload();
     } catch (err) {
@@ -245,13 +267,34 @@ export function GeneratorView() {
         )}
       </Panel>
 
-      <Panel title="Clean up" description="Removes synthetic tickets and their history only.">
+      <Panel title="Clean up" description="Bulk-delete tickets and their history.">
         <div className="flex items-center gap-3 border-t border-line-row px-[18px] py-4">
           <Button variant="outline" onClick={purge} disabled={busy || driving || !!running || !overview?.synthetic_tickets}>
             Delete synthetic tickets
           </Button>
           <span className="text-micro text-[#78869d]">{plural(overview?.synthetic_tickets ?? 0, "synthetic ticket")}</span>
         </div>
+        <form onSubmit={removeRandom} className="flex flex-wrap items-end gap-3 border-t border-line-row px-[18px] py-4">
+          <div className="grid gap-1.5">
+            <Label htmlFor="random-count">Delete random tickets</Label>
+            <Input
+              id="random-count"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              step={1}
+              value={randomInput}
+              onChange={(e) => setRandomInput(e.target.value)}
+              disabled={busy || driving || !!running}
+              aria-invalid={!randomValid}
+              className="w-40"
+            />
+          </div>
+          <Button type="submit" variant="destructive" disabled={busy || driving || !!running || !randomValid}>
+            Delete random
+          </Button>
+          <span className="pb-2 text-micro text-[#78869d]">Picks from all tickets, real and synthetic.</span>
+        </form>
       </Panel>
     </>
   );

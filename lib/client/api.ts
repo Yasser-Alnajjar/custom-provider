@@ -105,6 +105,9 @@ export const patchTicket = async (id: string, patch: Record<string, unknown>) =>
 export const deleteTicket = async (id: string) =>
   (await api<{ data: { id: string; deleted: true; events_removed: number } }>(`/api/tickets/${enc(id)}`, { method: "DELETE" })).data;
 
+export const deleteRandomTickets = async (count: number) =>
+  (await api<{ data: { deleted: number; events_removed: number } }>("/api/tickets/random", { method: "DELETE", body: { count } })).data;
+
 export const listPeople = async (kind: PersonKind) =>
   items(await api<ItemsResponse<PersonRecord>>(`/api/${kind}`));
 
