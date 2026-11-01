@@ -1,3 +1,4 @@
+import type { SettingsOverrides } from "@/lib/settings";
 export const STATUSES = ["new", "open", "pending", "in_progress", "solved", "closed"] as const;
 export const RESOLVED_STATUSES: readonly string[] = ["solved", "closed"];
 export const OPEN_STATUSES: readonly string[] = ["open", "in_progress"];
@@ -112,6 +113,8 @@ export interface DbState {
   people?: PeopleRegistry;
   /** Synthetic data generation jobs (most recent last). */
   generation?: { seq: number; jobs: GenerationJob[] };
+  /** Server settings saved from the UI (only values that differ from the defaults). */
+  settings?: SettingsOverrides;
 }
 
 export interface Pagination {

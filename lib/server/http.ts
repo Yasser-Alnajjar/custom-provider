@@ -1,4 +1,6 @@
 import { API_TOKEN } from "./config";
+import { withDb } from "./db";
+import { effectiveSettings } from "./settings";
 import { HttpError, StorageError } from "./errors";
 
 const CORS = {
@@ -6,8 +8,6 @@ const CORS = {
   "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Api-Key",
   "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
 };
-
-const MAX_BODY = 1e6;
 
 export function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body, null, 2), {
@@ -31,8 +31,9 @@ export function isAuthorized(req: Request): boolean {
 /** Reads the raw request body, enforcing the size limit. */
 export async function readText(req: Request): Promise<string> {
   const raw = await req.text();
+  const max = await withDb(false, (state) => effectiveSettings(state.settings).api.maxBodyBytes);
 
-  if (raw.length > MAX_BODY) throw new HttpError(400, "bad_request", "Body too large");
+  if (raw.length > max) throw new HttpError(400, "bad_request", "Body too large");
   return raw;
 }
 

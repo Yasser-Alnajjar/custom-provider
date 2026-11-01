@@ -1,4 +1,6 @@
 import { notFound, validationError } from "./errors";
+import { effectiveSettings } from "./settings";
+import type { ApiSettings } from "@/lib/settings";
 import {
   PRIORITIES,
   RESOLVED_STATUSES,
@@ -81,13 +83,13 @@ export interface ListParams {
   limit: number;
 }
 
-export function parseListParams(params: URLSearchParams): ListParams {
+export function parseListParams(params: URLSearchParams, api: ApiSettings = effectiveSettings().api): ListParams {
   return {
     updatedSince: params.get("updated_since"),
     status: params.get("status"),
     q: (params.get("q") || "").toLowerCase(),
     page: Math.max(1, Number(params.get("page") || 1)),
-    limit: Math.min(100, Math.max(1, Number(params.get("limit") || 20))),
+    limit: Math.min(api.maxLimit, Math.max(1, Number(params.get("limit") || api.defaultLimit))),
   };
 }
 

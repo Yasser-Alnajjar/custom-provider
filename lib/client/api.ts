@@ -1,3 +1,4 @@
+import type { SettingsOverrides, SettingsResponse } from "@/lib/settings";
 import type { GenerationProgress, Pagination, PersonKind, PersonRecord, Ticket, TicketEvent } from "@/lib/types";
 import { getToken } from "./storage";
 
@@ -168,3 +169,12 @@ export const resumeGeneration = async (id: string) =>
 
 export const purgeSynthetic = async () =>
   (await api<{ data: { deleted: number } }>("/api/generator/synthetic", { method: "DELETE" })).data;
+
+/** Server-side settings (page sizes, body limit, generator limits). Separate from the Elapsed configuration document. */
+export const getSettings = async () => (await api<{ data: SettingsResponse }>("/api/settings")).data;
+export const putSettings = async (overrides: SettingsOverrides) =>
+  (await api<{ data: SettingsResponse }>("/api/settings", { method: "PUT", body: overrides })).data;
+
+/** A list request exactly as Elapsed would send it; used to show the effect of the page-size settings. */
+export const probeTickets = (limit: number) =>
+  api<{ data: { items: unknown[]; pagination: Pagination } }>(`/api/tickets?limit=${limit}&page=1`);

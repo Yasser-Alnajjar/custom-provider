@@ -20,6 +20,7 @@ const NAV = [
   ] },
   { label: "INTEGRATION", items: [
     { href: "/provider", icon: "⚙", text: "Provider" },
+    { href: "/config-builder", icon: "☷", text: "Config builder" },
     { href: "/generator", icon: "✚", text: "Data generator" },
   ] },
 ];

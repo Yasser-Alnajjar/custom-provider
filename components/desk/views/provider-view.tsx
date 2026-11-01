@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -241,7 +242,7 @@ export function ProviderView() {
           Not provided by the server: users, customers, groups, attachments, custom fields, delete operations, pagination on comments/events.
         </div>
       </Panel>
-      <Panel title="Elapsed configuration" description="Paste this into Elapsed's Advanced (JSON) step." action={<CopyButton value={config} label="Copy JSON" />}>
+      <Panel title="Elapsed configuration" description="Paste this into Elapsed's Advanced (JSON) step." action={<div className="flex gap-2"><Button variant="outline" size="xs" nativeButton={false} render={<Link href="/config-builder" />}>Edit in builder</Button><CopyButton value={config} label="Copy JSON" /></div>}>
         <pre className="max-h-[480px] overflow-auto bg-deep px-[18px] py-3.5 font-mono text-micro text-[#b9d9f8]">{config}</pre>
       </Panel>
     </>

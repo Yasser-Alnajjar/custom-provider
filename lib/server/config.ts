@@ -1,3 +1,6 @@
+import { effectiveSettings } from "./settings";
+import type { SettingsOverrides } from "@/lib/settings";
+
 export const PORT = Number(process.env.PORT || 4100);
 export const API_TOKEN = process.env.API_TOKEN || "demo_elapsed";
 
@@ -14,19 +17,6 @@ export const DB_FILE =
   process.env.DB_FILE ||
   (process.env.VERCEL ? "/tmp/db.json" : `${process.cwd()}/public/db.json`);
 
-// Synthetic data generator. Read lazily so tests (and ops) can change them.
-const intEnv = (name: string, fallback: number, min: number, max: number) => {
-  const n = Number(process.env[name]);
-
-  return Number.isInteger(n) && n >= min ? Math.min(n, max) : fallback;
-};
-
-export const generatorLimits = () => ({
-  enabled: process.env.GENERATOR_ENABLED !== "0",
-  /** Largest single request. */
-  maxTickets: intEnv("GENERATOR_MAX_TICKETS", 1000, 1, 5000),
-  /** Tickets written per batch (one bounded database save each). */
-  batchSize: intEnv("GENERATOR_BATCH_SIZE", 50, 1, 200),
-  /** Synthetic tickets allowed in the database at once, across all jobs. */
-  maxTotal: intEnv("GENERATOR_MAX_TOTAL", 5000, 1, 20000),
-});
+// Synthetic data generator limits. Read lazily so tests (and ops) can change them. With a
+// database state they include any values saved from the UI; without one, just env/defaults.
+export const generatorLimits = (state?: { settings?: SettingsOverrides }) => effectiveSettings(state?.settings).generator;

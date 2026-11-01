@@ -101,6 +101,7 @@ The UI is a React app (Next.js App Router) served by the same server, so it alwa
 | `/requesters`, `/requesters/:key` | Requesters with their tickets and comments |
 | `/agents`, `/agents/:id` | Assignees and agent authors with workload, replies, notes, status changes |
 | `/provider` | Base URL, API token, live `/health` and `/api/meta`, "acting as" identity, endpoint reference, Elapsed config |
+| `/config-builder` | Form-based builder for the whole Elapsed configuration document: every field is a control, live JSON preview, copy / download / import, reset to defaults, restore Acme Desk, validation next to each field, request-volume estimate. The contract lives in `lib/config-builder/contract.ts` |
 
 Customers, requesters and agents have no endpoints of their own: those pages are derived from the `customer`, `requester` and `assignee` objects on tickets and from event authors.
 
@@ -129,6 +130,7 @@ All `/api/*` routes need `Authorization: Bearer <API_TOKEN>` (or `X-Api-Key`).
 | Route | Purpose |
 | --- | --- |
 | `GET /api/tickets?page=&limit=&updated_since=&status=&q=` | Paginated list: `data.items`, `data.pagination` |
+| `GET /api/settings`, `PUT /api/settings` | Server settings managed from **Config builder → Server settings**: `api.defaultLimit` (20), `api.maxLimit` (100), `api.maxBodyBytes` (1,000,000) and the generator limits. `PUT` replaces the saved overrides (`null`/omitted = default, `{}` = reset all). |
 | `GET /api/tickets/:id` | One ticket |
 | `GET /api/tickets/:id/comments` | Comments, oldest first. `author.role` is `customer`, `agent` or `system`; `public: false` marks an internal note |
 | `GET /api/tickets/:id/history` | Real status transitions (`from`, `to`, `created_at`) |
@@ -157,3 +159,9 @@ The server only exposes what is listed above. There are no endpoints or fields f
 - Only status changes and comments are recorded as events. Changing priority, assignee, tags or other fields is saved but does not appear in the history.
 - The server has no authenticated user, so a status change is attributed to the ticket's assignee (or System) rather than to whoever made it.
 - `GET /api/tickets` returns tickets sorted by ID; the UI loads every page and sorts/filters client-side. `/comments`, `/history` and `/api/events` are not paginated.
+
+## Server settings
+
+The Config builder has two tabs: **Provider JSON** (the Elapsed document) and **Server settings** (how this API behaves). They are independent: `api.maxLimit` is the most a list request can return (`?limit=500` is capped to it), while the JSON's `tickets.pagination.pageSize` is the page size Elapsed asks for.
+
+Saved settings are stored in the database itself (Supabase row or `DB_FILE`) under `settings`, so they survive restarts, are shared by all instances, and apply on the next request. Precedence: saved setting, then the existing environment variable (`GENERATOR_*`), then the built-in default. Deleting the database file also resets them. Only settings that exist in the server are exposed; there are no rate limits or timeouts to configure.

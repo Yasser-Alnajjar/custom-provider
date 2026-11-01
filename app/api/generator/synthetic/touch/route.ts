@@ -7,5 +7,5 @@ export const OPTIONS = preflight;
 
 /** Re-stamps synthetic tickets' `updated_at` so Elapsed's next incremental sync picks them up. */
 export const POST = api(async () =>
-  json({ data: await withDb(true, (state) => (assertEnabled(), touchSynthetic(state))) }),
+  json({ data: await withDb(true, (state) => (assertEnabled(state), touchSynthetic(state))) }),
 );
